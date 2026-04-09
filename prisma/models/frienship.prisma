@@ -1,0 +1,10 @@
+model FriendShip {
+  id     Int    @id @default(autoincrement())
+  status String
+
+  inviterId Int
+  inviter   User @relation("inviter", fields: [inviterId], references: [id])
+
+  accepterId Int
+  accepter   User @relation("accepter", fields: [accepterId], references: [id])
+}

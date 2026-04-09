@@ -1,0 +1,12 @@
+model Profile {
+    id Int @id @unique @default(autoincrement())
+    nickname String
+    username String @unique
+    userId Int @unique
+    user User? @relation("profile_user",fields: [userId], references: [id]) 
+    firstName String?
+    lastName String?
+    avatar Avatar[] @relation("avatar_profile")
+
+    albums Album[]
+}

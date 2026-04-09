@@ -1,0 +1,11 @@
+model Image {
+  id           Int    @id @default(autoincrement())
+  image        String
+  crackedImage String?
+
+  postId    Int?
+  post      Post? @relation(fields: [postId], references: [id])
+
+  messageId Int? 
+  message   Message? @relation(fields: [messageId], references: [id])
+}

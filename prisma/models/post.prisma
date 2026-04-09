@@ -1,0 +1,20 @@
+model Post {
+  id      Int    @id @default(autoincrement())
+  title   String
+  content String
+
+  creatorId Int
+  creator   User @relation(fields: [creatorId], references: [id])
+
+  likes Like[]
+
+  loves Love[]
+
+  views View[]
+
+  tags Tag[]
+
+  links Link[]
+
+  images Image[]
+}

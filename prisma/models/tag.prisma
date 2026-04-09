@@ -1,0 +1,8 @@
+model Tag {
+  id      Int    @id @default(autoincrement())
+  name    String
+  isBasic Boolean
+
+  postId Int
+  post   Post @relation(fields: [postId], references: [id])
+}

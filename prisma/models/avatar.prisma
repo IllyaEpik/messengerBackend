@@ -1,0 +1,12 @@
+model Avatar {
+    id Int @id @unique @default(autoincrement())
+    avatar String
+    crackedAvatar String
+    visible Boolean @default(true)
+
+    profileId Int? 
+    profile Profile? @relation("avatar_profile", fields: [profileId], references: [id])
+    
+    chatId Int?
+    chats Chat? @relation("avatar_chat", fields: [chatId], references: [id])
+}

@@ -1,0 +1,9 @@
+model AlbumPhoto {
+  id           Int     @id @default(autoincrement())
+  photo        String
+  crackedPhoto String?
+  visible      Boolean
+
+  albumId Int
+  album   Album @relation(fields: [albumId], references: [id])
+}

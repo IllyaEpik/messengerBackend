@@ -1,0 +1,12 @@
+model Album {
+  id      Int     @id @default(autoincrement())
+  title   String
+  year    Int?
+  visible Boolean
+
+  profileId Int
+  profile   Profile @relation(fields: [profileId], references: [id])
+
+  photos AlbumPhoto[]
+  topics Topic[] @relation("AlbumToTopic")
+}
