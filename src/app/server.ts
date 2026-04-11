@@ -4,7 +4,7 @@ import { AppRouter } from "./routes.ts";
 import cors from "cors";
 const app = express()
 app.use(cors({
-    origin: ['http://127.0.0.1:3000', 'http://localhost:3000'],
+    origin: "*",
   credentials: true
 }))
 app.use(express.json())
@@ -12,7 +12,7 @@ app.use(express.urlencoded({ extended: true }))
 app.use(AppRouter);
 
 
-const HOST = "127.0.0.1"
+const HOST = "0.0.0.0"
 const PORT = 8000
 
 app.listen(PORT,HOST, () =>{ 
