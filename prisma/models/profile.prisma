@@ -3,7 +3,8 @@ model Profile {
     nickname String
     username String @unique
     userId Int @unique
-    user User? @relation("profile_user",fields: [userId], references: [id]) 
+    user User @relation("profile_user",fields: [userId], references: [id]) 
+    birthday DateTime?
     firstName String?
     lastName String?
     avatar Avatar[] @relation("avatar_profile")

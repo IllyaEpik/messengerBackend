@@ -22,8 +22,7 @@ model User {
     admins Admin[]
 
     messages Message[]
-
-    
-
     members Member[]
+    code Code?
+    confirmedUser Boolean @default(false)
 }
