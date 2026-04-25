@@ -3,8 +3,7 @@ import express from "express";
 import { AppRouter } from "./routes.ts";
 import cors from "cors";
 import { handleResponse } from "../middlewares/handleResponse.ts";
-import { dirname, join } from "path";
-import { fileURLToPath } from "url";
+import { join } from "path";
 const app = express()
 app.use(cors({
     origin: "*",

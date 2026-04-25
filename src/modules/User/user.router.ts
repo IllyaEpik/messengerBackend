@@ -14,7 +14,6 @@ router.post("/login", UserController.login)
 router.get("/me",authMiddleware, UserController.me)
 router.patch("/", upload.single('avatar'), authMiddleware, UserController.updateUser)
 router.post("/profile", authMiddleware, UserController.createProfile)
-router.post("/avatar", authMiddleware, UserController.createProfile)
 
 export default router
 //     "name":"ok",

@@ -30,10 +30,11 @@ export const UserRepository:IRepositoryContract = {
             const user = await Prisma.user.findUnique({
                 where: { id },
                 include:{
-                    profile:
-                    {include: {
-                        avatar: true,
-                    }}
+                    profile: {
+                        include: {
+                            avatar: true
+                        }
+                    }
                 }
             })
             if (!user) return null

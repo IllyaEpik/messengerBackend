@@ -1,6 +1,5 @@
 import type{Response, Request} from "express";
 export function handleResponse(req:Request,res:Response){
-    // console.log("handleResponse called")
     const data = res.locals.data || "nothing was provided"
     try {
         const succsesStatus = res.locals.succsesStatus || 200
@@ -12,6 +11,7 @@ export function handleResponse(req:Request,res:Response){
             if (isNaN(status) || status>599 || status<100){
                 res.status(500).json(`status is wrong (for delevoper), status: ${status}, data ${data}`)
                 return
+                
             }
             res.status(status).json(text)
             return

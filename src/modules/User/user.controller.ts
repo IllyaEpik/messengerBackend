@@ -6,7 +6,6 @@ import type { IControllerContract, TokenPayload } from "./user.types.ts"
 export const UserController:IControllerContract = {
     registation: async (req, res, next) => {
 
-            console.log("reg1 controller result:")
         try {
             const user = req.body
             const result = await UserService.registation(user)
@@ -20,7 +19,6 @@ export const UserController:IControllerContract = {
     },
     RegistrationSecondPhase: async (req, res, next) =>{
 
-        console.log("reg2 controller result:")
         try {
             const code = Number(req.params.code)
             const result = await UserService.secondPhaseOfRegistation(code)
@@ -33,24 +31,16 @@ export const UserController:IControllerContract = {
     },
 
     login: async (req, res, next) => {
-            console.log("login controller result:")
         try {
-            console.log("ok")
             const userData = req.body
-            console.log("ok1")
             const result = await UserService.login(userData)
-            console.log("ok2")
             res.locals.data = result
-            console.log("ok3", result)
             next()
-            console.log("ok35")
         } catch (error) {
-            console.log("ok4")
             res.status(500).json({ error })
         }
     },
     me: async (req, res,next) => {
-        console.log("me controller called",res.locals.userId)
         try {
             const userId = Number(res.locals.userId)
             const result = await UserService.me(userId)
@@ -62,7 +52,6 @@ export const UserController:IControllerContract = {
         }
     },
     updateUser: async (req,res,next) => {
-        console.log("update controller called")
         try {
             const userUpdateData = req.body
             const userId = res.locals.userId
@@ -77,7 +66,6 @@ export const UserController:IControllerContract = {
         }
     },
     createProfile: async (req, res,next) => {
-        console.log("me controller called",res.locals.userId)
         try {
             const profileCreateData = req.body
             

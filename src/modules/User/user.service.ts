@@ -59,11 +59,9 @@ export const UserService:IServiceContract = {
     login: async (userData) => {
         const user = await UserRepository.getUser(userData.email)
         if (!user || user.password !== userData.password) {
-            console.log("Invalid email or password")
             return "Invalid email or password|404"
         }
         if (!user.confirmedUser) {
-            console.log("not confirmed")
             return "Please confirm your email before logging in|403"
         }
         const token = jwt.sign({ userId: user.id }, env.SECRET_KEY, { expiresIn: "7d" })
@@ -87,13 +85,12 @@ export const UserService:IServiceContract = {
         const originalPath = join(outputDir, `/Avatars/${timestamp}.jpg`);
         const minimizedPath = join(outputDir, `/crackedAvatars/${timestamp}.jpg`);
         await sharp(avatar.buffer).toFile(originalPath);
-        console.log(`Original saved to: ${originalPath}`);
 
         await sharp(avatar.buffer)
-        .resize({ width: 50, withoutEnlargement: true }) 
+        .resize({ width: 100, withoutEnlargement: true }) 
         .jpeg({ quality: 80 })  
         .toFile(minimizedPath);
-        console.log(`Minimized saved to: ${minimizedPath}`);
+        
         await UserRepository.avatar(id,{
             avatar:originalPath,
             crackedAvatar:minimizedPath
@@ -115,7 +112,6 @@ export const UserService:IServiceContract = {
     //     try {
     //         await UserRepository.deleteTokenByUserId(user.id)
     //     } catch (error) {
-    //         console.log()
     //     }   
     //     await UserRepository.createToken(user.id,confirmationToken)
     //     await transporter.sendMail({

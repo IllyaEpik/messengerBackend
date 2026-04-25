@@ -7,6 +7,9 @@ model Profile {
     birthday DateTime?
     firstName String?
     lastName String?
+    electronicSignature String?
+    showElectronicSignature Boolean @default(false)
+    showNickname Boolean @default(true)
     avatar Avatar[] @relation("avatar_profile")
 
     albums Album[]

@@ -5,5 +5,5 @@ model AlbumPhoto {
   visible      Boolean
 
   albumId Int
-  album   Album @relation(fields: [albumId], references: [id])
+  album   Album @relation(fields: [albumId], references: [id], onDelete: Cascade)
 }

@@ -1,7 +1,7 @@
 model Topic {
   id   Int    @id @default(autoincrement())
-  name String
-
-  albumId Int
-  album   Album @relation("AlbumToTopic", fields: [albumId], references: [id])
+  name String @unique
+  isBasic Boolean @default(false)
+  // albumId Int
+  album   Album[] @relation("AlbumToTopic")
 }

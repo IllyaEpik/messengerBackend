@@ -4,7 +4,7 @@ import multer, { memoryStorage } from "multer"
 import sharp from "sharp";
 
 import type { NextFunction, Request, Response } from "express";
-import { originalDir, thumbDir } from "../config/path";
+import { originalDir, thumbDir } from "../config/path.ts";
 
 
 export const uploadMiddleware = multer({ storage: memoryStorage() })
