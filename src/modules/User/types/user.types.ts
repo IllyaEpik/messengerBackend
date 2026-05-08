@@ -15,12 +15,20 @@ export interface UserLogin {
     email: string,
     password: string
 }
+
 export type IUser = Prisma.UserGetPayload<{}>
 export type UserSecurity = Omit<IUser, "password">
 export type UserSecurityWithId = Omit<UserSecurity, "id"> & { id: number }
 export type IProfile = Prisma.ProfileGetPayload<{}>
 export type ProfileCreate = Omit<IProfile, "id" | "userId" | "avatar"> & { username: string }
 export type ProfileUpdate = Partial<ProfileCreate> & { username?: string }
+
+
+export interface gottenFriends {
+    friends: IProfile[],
+    friendRequests: IProfile[],
+    friendsRecommneds: IProfile[]
+}
 
 export type updateProfileFile = {
     avatar?: Express.Multer.File[],

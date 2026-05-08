@@ -77,16 +77,90 @@ export const UserRepository:IRepositoryContract = {
         }) || null
     },
     createProfile: async (id, data) => {
+        const { username, ...profileData } = data
         if (data.username) Prisma.user.update({
             where: { id },
-            data: data
+            data: {username}
         }) || null
         return Prisma.profile.create({
             data: {
-                ...data,
+                ...profileData,
                 userId:id,
                 avatar: "media/avatar.png"
             }
         }) || null
-    }
+    },
+    async sendFriendRequest(fromUserId, toUserId) {
+        
+        await Prisma.friendsRequest.create({
+            data: {
+                toProfileId: toUserId,
+                fromProfileId: fromUserId
+            }
+        })
+    },
+    async confirmFriendRequest(fromUserId, toUserId) {
+        await Prisma.friendsRequest.deleteMany({
+            where: {
+                toProfileId: toUserId,
+                fromProfileId: fromUserId
+            }
+        })
+        await Prisma.profile.update({
+            where: { userId: fromUserId },
+            data: {
+                friends: {
+                    connect: { userId: toUserId }
+                }
+            }
+        })
+    },
+    async getFriends(userId) {
+        const friends = await Prisma.profile.findUnique({
+            where: {
+                userId
+            },
+            include: {
+                friendOf: true,
+                friends: true
+            }
+        })
+        if (!friends) return []
+        return friends.friendOf.concat(friends.friends)
+    },
+    async getRecommendedFriends(userId) {
+        // const friends = await this.getFriends(userId)
+        // const friendIds = friends.map(friend => friend.userId)
+        // const recommendedFriends = await Prisma.profile.findMany({
+        //     where: {
+        //         userId: {
+        //             notIn: [userId, ...friendIds]
+        //         }
+        //     }
+        // })
+        const recommendedFriends = await Prisma.profile.findMany({
+        })
+        return recommendedFriends
+    },
+    async getFriendRequests(userId) {
+        const requests = await Prisma.friendsRequest.findMany({
+            where: {
+                toProfileId: userId
+            },
+            include: {
+                fromProfile: true
+            }
+        })
+        return requests.map(request => request.fromProfile)
+    },
+    // async deleteFriend(userId, friendId) {
+    //     await Prisma.profile.update({
+    //         where: {
+    //             OR: [
+    //                 { user1Id: userId, user2Id: friendId },
+    //                 { user1Id: friendId, user2Id: userId }
+    //             ]
+    //         }
+    //     })
+    // }
 }      

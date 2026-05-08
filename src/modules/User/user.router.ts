@@ -13,5 +13,8 @@ router.post("/login", UserController.login)
 router.get("/me",authMiddleware, UserController.me)
 router.patch("/", upload.fields([{name:'avatar'},{name:"electronicSignature"}]), authMiddleware, UserController.updateUser)
 router.post("/profile", authMiddleware, UserController.createProfile)
+router.get("/send/:profile", authMiddleware, UserController.sendFriendRequest)
+router.get("/confirm/:fromUserId", authMiddleware, UserController.confirmFriendRequest)
+// router.delete("/delete-friend/:friendId", authMiddleware, UserController.deleteFriend)
 
 export default router

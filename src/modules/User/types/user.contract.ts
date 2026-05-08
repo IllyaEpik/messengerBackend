@@ -11,6 +11,7 @@ import type{
     IError, 
     updateProfileFile,
     IUser,
+    gottenFriends
  } from "./user.types.ts";
 export interface IRepositoryContract {
     createUser: (user:UserCreate) => Promise<UserSecurityWithId | null>
@@ -22,6 +23,12 @@ export interface IRepositoryContract {
     //confirmUserById: (userId:number) => Promise<void>
     updateUser: (id: number, data: ProfileUpdate, avatar?: updateProfileFile) => Promise<IProfile | null>
     createProfile: (id: number, data: ProfileCreate) => Promise<IProfile | null>
+    sendFriendRequest: (fromUserId: number, toUserId: number) => Promise<void>
+    confirmFriendRequest: (fromUserId: number, toUserId: number) => Promise<void>
+    getFriends: (userId: number) => Promise<IProfile[]>
+    getRecommendedFriends: (userId: number) => Promise<IProfile[]>
+    getFriendRequests: (userId: number) => Promise<IProfile[]>
+    // deleteFriend: (userId: number, friendId: number) => Promise<void>
 }
 
 export interface IServiceContract {
@@ -31,6 +38,10 @@ export interface IServiceContract {
     secondPhaseOfRegistation: (code:number) => Promise<string | IToken>
     updateUser: (id: number, data: ProfileUpdate, files?: updateProfileFile) => Promise<IProfile | string>
     createProfile: (id: number, data: ProfileCreate) => Promise<IProfile | string>
+    sendFriendRequest: (fromUserId: number, toUserId: number) => Promise<void | string>
+    confirmFriendRequest: (fromUserId: number, toUserId: number) => Promise<void >
+    getFriends: (userId: number) => Promise<gottenFriends | string>
+    // deleteFriend: (userId: number, friendId: number) => Promise<void>
 }
 
 export interface IControllerContract {
@@ -66,26 +77,25 @@ export interface IControllerContract {
         next: NextFunction
     ) => Promise<void>
 
-    sendRequest: (
-        req: Request<{}, IProfile | IError | string, ProfileCreate>, 
+    sendFriendRequest: (
+        req: Request<{
+            profile: string
+        }, IProfile | IError | string, ProfileCreate>, 
         res: Response<IProfile | IError | string>,
         next: NextFunction
     ) => Promise<void>
-    confirmRequest: (
-        req: Request<{}, IProfile | IError | string, ProfileCreate>, 
+    confirmFriendRequest: (
+        req: Request<{
+            fromUserId: string
+        }, IProfile | IError | string, ProfileCreate>, 
         res: Response<IProfile | IError | string>,
         next: NextFunction
     ) => Promise<void>
-    // getFriends: (
-    //     req: Request<{}, IProfile[] | IError | string, {}>, 
-    //     res: Response<IProfile[] | IError | string>,
-    //     next: NextFunction
-    // ) => Promise<void>
-    // getFriendRequests: (
-    //     req: Request<{}, IProfile[] | IError | string, {}>, 
-    //     res: Response<IProfile[] | IError | string>,
-    //     next: NextFunction
-    // ) => Promise<void>
+    getFriends: (
+        req: Request<{}, IProfile[] | IError | string, {}>, 
+        res: Response<IProfile[] | IError | string>,
+        next: NextFunction
+    ) => Promise<void>
     // deleteFriend: (
     //     req: Request<{}, IProfile | IError | string, {}>, 
     //     res: Response<IProfile | IError | string>,

@@ -128,38 +128,25 @@ export const UserService:IServiceContract = {
         if (!user) return "User not found|404"
         
         return user
+    },
+    sendFriendRequest: async (fromUserId, toUserId) => {
+        if (fromUserId === toUserId) return "You cannot send a friend request to yourself|400"
+        await UserRepository.sendFriendRequest(fromUserId, toUserId)
+    },
+    confirmFriendRequest: async (fromUserId, toUserId) => {
+        await UserRepository.confirmFriendRequest(fromUserId, toUserId)
+    },
+    getFriends: async (userId) => {
+        const friends = await UserRepository.getFriends(userId)
+        const friendRequests = await UserRepository.getFriendRequests(userId)
+        const friendsRecommneds = await UserRepository.getRecommendedFriends(userId)
+        return {
+            friends,
+            friendRequests,
+            friendsRecommneds
+        }
     }
-    // resetPassword: async (email) => {
-        
-    //     const confirmationToken = randomInt(999999);
-    //     const confirmUrl = `http://127.0.0.1:3000/confirm-password-change/${confirmationToken}`;
-    //     const user = await UserRepository.getUser(email)
-    //     if (!user) return "wrong email|404"
-    //     try {
-    //         await UserRepository.deleteTokenByUserId(user.id)
-    //     } catch (error) {
-    //     }   
-    //     await UserRepository.createToken(user.id,confirmationToken)
-    //     await transporter.sendMail({
-    //         from: '"dronesShop" <illyaepik@gmail.com>',
-    //         to: email,
-    //         subject: "confirm reset password",
-    //         html: `
-    //             <div style="font-family: Arial, sans-serif; text-align: center;">
-    //                 <h1>hello!</h1>
-    //                 <p>Click on this link to confirm:</p>
-    //                 <a href="${confirmUrl}"
-    //                     style="background-color: #4CAF50; 
-    //                             color: white; 
-    //                             padding: 14px 25px; 
-    //                             text-decoration: none; 
-    //                             display: inline-block; 
-    //                             border-radius: 4px;
-    //                             font-weight: bold;">
-    //                     confirm reset password
-    //                 </a>
-    //             </div>
-    //         `})
-    //     return "succses |200"
+    // deleteFriend: async (userId, friendId) => {
+    //     await UserRepository.deleteFriend(userId, friendId)
     // }
 }

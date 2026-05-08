@@ -83,4 +83,53 @@ export const UserController:IControllerContract = {
             res.status(500).json({ error })
         }
     },
+    sendFriendRequest: async (req, res, next) => {
+        try {
+            console.log(req.params.profile, res.locals.userId)
+            const fromUserId = Number(res.locals.userId)
+            const toUserId = Number(req.params.profile)
+            const response = await UserService.sendFriendRequest(fromUserId, toUserId)
+
+            res.locals.data = response || "Friend request sent|200" 
+            next()
+        } catch (error) {
+            console.error("Error in sendFriendRequest controller:", error)
+            res.status(500).json({ error })
+        }
+    },
+    confirmFriendRequest: async (req, res, next) => {
+        try {
+            const toUserId = Number(res.locals.userId)
+            const fromUserId = Number(req.params.fromUserId)
+            await UserService.confirmFriendRequest(fromUserId, toUserId)
+            res.locals.data = "Friend request confirmed|200"
+            next()
+        } catch (error) {
+            console.error("Error in confirmFriendRequest controller:", error)
+            res.status(500).json({ error })
+        }
+    },
+    getFriends: async (req, res, next) => {
+        try {
+            const userId = Number(res.locals.userId)
+            const result = await UserService.getFriends(userId)
+            res.locals.data = result
+            next()
+        } catch (error) {
+            console.error("Error in getFriends controller:", error)
+            res.status(500).json({ error })
+        }
+    },
+    // deleteFriend: async (req, res, next) => {
+    //     try {
+    //         const userId = Number(res.locals.userId)
+    //         const friendId = Number(req.params.friendId)
+    //         await UserService.deleteFriend(userId, friendId)
+    //         res.locals.data = "Friend deleted"
+    //         next()
+    //     } catch (error) {
+    //         console.error("Error in deleteFriend controller:", error)
+    //         res.status(500).json({ error })
+    //     }
+    // }
 }
