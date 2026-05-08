@@ -1,52 +1,27 @@
-import type{ Response, Request, NextFunction } from "express";
-import Prisma from "../../config/prisma.ts";
-
-export type UserCreate = Prisma.UserCreateInput
-export type ProfileCreate = Omit<Prisma.ProfileCreateInput, "user">
-export type ProfileUpdate = Prisma.ProfileUpdateInput
-export type avatarCreate = Omit<Prisma.AvatarCreateInput, "profile">
-
-export type IUser = Prisma.UserGetPayload<{}>
-export type IProfile = Prisma.ProfileGetPayload<{}>
-export type IAvatar = Prisma.AvatarGetPayload<{}>
-
-export interface IToken {
-    token: string
-}
-export interface TokenPayload {
-	userId: number;
-}
-export interface IError {
-    error: unknown
-}
-
-export type UserSecurityWithId = Omit<IUser, "password">
-export type UserSecurity = Omit<UserSecurityWithId, "id">
-export type UserLogin = {
-    email:string,
-    password:string
-}
-
-export interface IAvatarUpload {
-    fieldname: string;
-    originalname: string;
-    encoding: string;
-    mimetype: string;
-    buffer: Buffer;
-    size: number;
-}
-
+import { Request, Response, NextFunction } from "express";
+import type{ 
+    UserCreate, 
+    UserLogin, 
+    UserSecurity, 
+    UserSecurityWithId, 
+    IProfile, 
+    ProfileCreate, 
+    ProfileUpdate, 
+    IToken, 
+    IError, 
+    updateProfileFile,
+    IUser,
+ } from "./user.types.ts";
 export interface IRepositoryContract {
     createUser: (user:UserCreate) => Promise<UserSecurityWithId | null>
     getUser: (email:string) => Promise<IUser | null> 
     getUserById: (id:number)=> Promise<UserSecurityWithId | null>
-    createCode: (userId:number, code:number) => Promise<void>
-    getCode: (code:number) => Promise<number | null>
+    createCode: (userId:number, code:number, expiresAt: Date) => Promise<void>
+    getCode: (code: number) => Promise<number | null>
     deleteCodeByUserId: (userId:number) => Promise<void>
-    confirmUserById: (userId:number) => Promise<void>
-    updateUser: (id: number, data: ProfileUpdate, avatar?: IAvatarUpload) => Promise<IProfile | null>
+    //confirmUserById: (userId:number) => Promise<void>
+    updateUser: (id: number, data: ProfileUpdate, avatar?: updateProfileFile) => Promise<IProfile | null>
     createProfile: (id: number, data: ProfileCreate) => Promise<IProfile | null>
-    avatar: (id: number,data: avatarCreate ) => Promise<IAvatar | null>
 }
 
 export interface IServiceContract {
@@ -54,7 +29,7 @@ export interface IServiceContract {
     login: (userData:UserLogin) => Promise<string | IToken>
     me: (id:number) => Promise<UserSecurity | string>
     secondPhaseOfRegistation: (code:number) => Promise<string | IToken>
-    updateUser: (id: number, data: ProfileUpdate, avatar?: IAvatarUpload) => Promise<IProfile | string>
+    updateUser: (id: number, data: ProfileUpdate, files?: updateProfileFile) => Promise<IProfile | string>
     createProfile: (id: number, data: ProfileCreate) => Promise<IProfile | string>
 }
 
@@ -90,5 +65,30 @@ export interface IControllerContract {
         res: Response<IProfile | IError | string>,
         next: NextFunction
     ) => Promise<void>
+
+    sendRequest: (
+        req: Request<{}, IProfile | IError | string, ProfileCreate>, 
+        res: Response<IProfile | IError | string>,
+        next: NextFunction
+    ) => Promise<void>
+    confirmRequest: (
+        req: Request<{}, IProfile | IError | string, ProfileCreate>, 
+        res: Response<IProfile | IError | string>,
+        next: NextFunction
+    ) => Promise<void>
+    // getFriends: (
+    //     req: Request<{}, IProfile[] | IError | string, {}>, 
+    //     res: Response<IProfile[] | IError | string>,
+    //     next: NextFunction
+    // ) => Promise<void>
+    // getFriendRequests: (
+    //     req: Request<{}, IProfile[] | IError | string, {}>, 
+    //     res: Response<IProfile[] | IError | string>,
+    //     next: NextFunction
+    // ) => Promise<void>
+    // deleteFriend: (
+    //     req: Request<{}, IProfile | IError | string, {}>, 
+    //     res: Response<IProfile | IError | string>,
+    //     next: NextFunction
+    // ) => Promise<void>
 }
-export default IServiceContract

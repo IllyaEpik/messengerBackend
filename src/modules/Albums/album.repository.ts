@@ -11,20 +11,18 @@ export const albumRepository: repositoryContract = {
                 select:{
                     albums:{
                         select:{
-                            title:true,
+                            name:true,
                             year:true,
-                            visible:true,
+                            is_shown:true,
                             id:true,
-                            topic:{
-                                select:{
-                                    name:true
-                                }
-                            },
+                            theme:true,
+                            
+                        },
+                        include:{
                             photos:{
                                 select:{
-                                    photo:true,
-                                    crackedPhoto:true,
-                                    visible:true
+                                    image:true,
+                                    is_shown:true
                                 }
                             }
                         }
@@ -47,17 +45,8 @@ export const albumRepository: repositoryContract = {
                         }
                     },
                     year:data.year,
-                    topic: {
-                        connectOrCreate:{
-                            create:{
-                                name:data.topic
-                            },
-                            where: {
-                                name:data.topic
-                            }
-                        }
-                    },
-                    title:data.title
+                    theme: data.topic,
+                    name:data.title
                 },
                 omit:{
                     profileId:true
@@ -102,16 +91,15 @@ export const albumRepository: repositoryContract = {
         }
     },
     async addPhoto(photo, id) {
-        return await Prisma.albumPhoto.create({
+        return await Prisma.albumImage.create({
             data:{
                 album:{
                     connect: {
                         id: id
                     }
                 },
-                photo: photo.photo ?? null,
-                crackedPhoto: photo.crackedPhoto ?? null,
-                visible:true
+                image: photo.image ?? null,
+                is_shown:true
             }
         })
     },
@@ -123,12 +111,10 @@ export const albumRepository: repositoryContract = {
             include:{
                 photos:{
                     select:{
-                        photo:true,
-                        crackedPhoto:true,
-                        visible:true
+                        image:true,
+                        is_shown:true
                     }
-                },
-                topic:true
+                }
             }
         })
     },

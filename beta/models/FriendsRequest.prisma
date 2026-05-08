@@ -1,0 +1,12 @@
+model FriendsRequest {
+    id     Int    @id @default(autoincrement())
+    status String
+
+    from_profile_id Int
+    from_profile   Profile @relation("ReceivedRequests", fields: [from_profile_id], references: [id])
+
+    to_profile_id Int
+    to_profile   Profile @relation("SentRequests", fields: [to_profile_id], references: [id])
+    created_at DateTime @default(now())
+    @@unique([from_profile_id, to_profile_id]) 
+}

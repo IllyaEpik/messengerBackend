@@ -1,28 +1,24 @@
 model User {
-    id Int @id @unique @default(autoincrement())
-    email  String @unique   
-    password String 
-    addedAt DateTime @default(now())
-    // profileId Int? @unique
-    profile Profile? @relation("profile_user")
-
-
+    id    Int     @id @default(autoincrement())
+    username  String? @unique 
+    email String  @unique
+    password String
+    emailVerification EmailVerification? @relation("UserEmailVerification")
+    profile Profile? @relation("UserProfile")
+    chats Chat[] @relation("ChatParticipants")
+    adminChats Chat[] @relation("ChatAdmin")
+    messages Message[] @relation("MessageReaders")
+    sentMessages Message[] @relation("sentMessages")
     posts Post[]
-
-    likes Like[]
-
-    loves Love[]
-
-    views View[]
-
-    friendShipsInvate FriendShip[] @relation("inviter")
-
-    friendShipsAccept FriendShip[] @relation("accepter")
-
-    admins Admin[]
-
-    messages Message[]
-    members Member[]
-    code Code?
-    confirmedUser Boolean @default(false)
+    views PostView[]
+    likes PostLike[]
+    hearts PostHeart[]
+}
+model EmailVerification {
+  id Int @id @default(autoincrement())
+  new_email String? @unique
+  code String @unique
+  expiresAt DateTime
+  userId Int @unique
+  user User @relation("UserEmailVerification",fields: [userId], references: [id])
 }

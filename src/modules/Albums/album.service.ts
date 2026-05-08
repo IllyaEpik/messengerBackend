@@ -44,9 +44,7 @@ export const albumService: serviceContract = {
             .jpeg({ quality: 80 })  
             .toFile(minimizedPath);
             await albumRepository.addPhoto({
-                photo:originalPath,
-                crackedPhoto:minimizedPath,
-                visible:true
+                image:`${timestamp}.jpg`
             },albumId)
 
         }

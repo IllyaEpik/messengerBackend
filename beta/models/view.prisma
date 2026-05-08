@@ -1,4 +1,4 @@
-model Like {
+model View {
   id     Int @id @default(autoincrement())
 
   userId Int
@@ -6,4 +6,5 @@ model Like {
 
   postId Int
   post   Post @relation(fields: [postId], references: [id])
+  @@unique([userId, postId])
 }

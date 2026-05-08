@@ -1,0 +1,9 @@
+model Chat{
+    id       Int     @id @default(autoincrement())
+    chatName String
+    isGroup  Boolean
+    members  Member[]
+    admins   Admin[]
+    messages Message[]
+    avatars  Avatar[] @relation("avatar_chat")
+}

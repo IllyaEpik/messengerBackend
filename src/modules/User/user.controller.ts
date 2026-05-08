@@ -1,7 +1,8 @@
 import { env } from "../../config/env.ts"
 import jwt from "jsonwebtoken";
 import { UserService } from "./user.service.ts"
-import type { IControllerContract, TokenPayload } from "./user.types.ts"
+import type { IControllerContract } from "./types/user.contract.ts"
+import type { updateProfileFile } from "./types/user.types.ts"
 
 export const UserController:IControllerContract = {
     registation: async (req, res, next) => {
@@ -18,7 +19,7 @@ export const UserController:IControllerContract = {
         }
     },
     RegistrationSecondPhase: async (req, res, next) =>{
-
+        console.log(req.params.code,"ewqwqwq")
         try {
             const code = Number(req.params.code)
             const result = await UserService.secondPhaseOfRegistation(code)
@@ -36,6 +37,7 @@ export const UserController:IControllerContract = {
             const result = await UserService.login(userData)
             res.locals.data = result
             next()
+            
         } catch (error) {
             res.status(500).json({ error })
         }
@@ -55,8 +57,11 @@ export const UserController:IControllerContract = {
         try {
             const userUpdateData = req.body
             const userId = res.locals.userId
-            const avatarFile = req.file
-            const result = await UserService.updateUser(userId, userUpdateData, avatarFile)
+            console.log(userUpdateData)
+            const files = req.files as updateProfileFile
+            
+            const result = await UserService.updateUser(userId, userUpdateData, files)
+            console.log(result)
             res.locals.data = result
             
             next()

@@ -2,11 +2,13 @@
 // import { IServiceContract, IToken } from "./user.types.ts"
 import { env } from "../../config/env.ts";
 import jwt from "jsonwebtoken";
-import type { IServiceContract } from "./user.types.ts"
+import type { IServiceContract } from "./types/user.contract.ts"
 import { UserRepository } from "./user.repository.ts";
 import { transporter } from "../../config/sender.ts";
 import { randomInt } from "crypto";
 import sharp from 'sharp';
+
+import { compare, hash } from "bcryptjs";
 import { join,dirname  } from "path";
 import { fileURLToPath } from 'url';
 
@@ -17,21 +19,24 @@ const outputDir = join(__dirname, "../../media/")
 
 export const UserService:IServiceContract = {
     registation: async (user) => {
-        let createdUser = await UserRepository.createUser(user)
+        let createdUser = await UserRepository.createUser({
+            email: user.email,
+            password: await hash(user.password,10)
+        })
         if (!createdUser) {
             const gottenUser = await UserRepository.getUser(user.email)
             if (!gottenUser){
                 return "Failed to create user|422"
             }
-            if (!gottenUser.confirmedUser){
-                return "user with this email already exists|403"
-            }
+            //if (!gottenUser.confirmedUser){
+               // return "user with this email already exists|403"
+            //}
             await UserRepository.deleteCodeByUserId(gottenUser.id)
             createdUser = gottenUser
         }
         const confirmationCode = randomInt(999999);
         
-        await UserRepository.createCode(createdUser.id, confirmationCode)
+        await UserRepository.createCode(createdUser.id, confirmationCode, new Date(Date.now() + 300000))
         await transporter.sendMail({
             from: '"messenger" <illyaepik@gmail.com>',
             to: user.email,
@@ -52,18 +57,18 @@ export const UserService:IServiceContract = {
         }
         
         await UserRepository.deleteCodeByUserId(userId)
-        await UserRepository.confirmUserById(userId)
+        // await UserRepository.confirmUserById(userId)
         const token = jwt.sign({ userId }, env.SECRET_KEY, { expiresIn: "7d" })
         return { token }
     },
     login: async (userData) => {
         const user = await UserRepository.getUser(userData.email)
-        if (!user || user.password !== userData.password) {
+        if (!user || !(await compare(userData.password, user.password))) {
             return "Invalid email or password|404"
         }
-        if (!user.confirmedUser) {
-            return "Please confirm your email before logging in|403"
-        }
+        //if (!user.confirmedUser) {
+         //   return "Please confirm your email before logging in|403"
+        //}
         const token = jwt.sign({ userId: user.id }, env.SECRET_KEY, { expiresIn: "7d" })
         return { token }
     },
@@ -73,28 +78,49 @@ export const UserService:IServiceContract = {
         if (!user) return "User not found|404"
         return user
     },
-    updateUser: async (id,data,avatar) => {
+    updateUser: async (id,data,files) => {
+        const timestamp = Date.now();
         
-        const user = await UserRepository.updateUser(id,data)
+        const user = await UserRepository.updateUser(id,{
+            ...data,
+            ...(files?.electronicSignature?.[0] ? { electronicSignature:`${timestamp}` } : {})
+        })
         if (!user) return "User not found|404"
-        if (!avatar){
+        console.log(files?.electronicSignature)
+        if (!files?.avatar && !files?.electronicSignature){
             return user
         }
+        
 
-        const timestamp = Date.now();
         const originalPath = join(outputDir, `/Avatars/${timestamp}.jpg`);
         const minimizedPath = join(outputDir, `/crackedAvatars/${timestamp}.jpg`);
-        await sharp(avatar.buffer).toFile(originalPath);
+        if (files?.avatar && files.avatar.length > 0){
+            const avatar = files.avatar.at(0) as Express.Multer.File
+            await sharp(avatar.buffer).toFile(originalPath);
+    
+            await sharp(avatar.buffer)
+            .resize({ width: 100, withoutEnlargement: true }) 
+            .jpeg({ quality: 80 })  
+            .toFile(minimizedPath);
+            
+            //await UserRepository.avatar(id,{
+            //    avatar:`/Avatars/${timestamp}.jpg`,
+            //    crackedAvatar:`/crackedAvatars/${timestamp}.jpg`
+            //})
+        }
+        console.log(files,data)
+        if (!files?.electronicSignature || files.electronicSignature.length < 1){
+            return user
+        }
+        const electronicSignature = files.electronicSignature.at(0) as Express.Multer.File
+        await sharp(electronicSignature.buffer).toFile(originalPath);
 
-        await sharp(avatar.buffer)
+        await sharp(electronicSignature.buffer)
         .resize({ width: 100, withoutEnlargement: true }) 
+        .flatten({ background: { r: 255, g: 255, b: 255 } })
         .jpeg({ quality: 80 })  
         .toFile(minimizedPath);
-        
-        await UserRepository.avatar(id,{
-            avatar:originalPath,
-            crackedAvatar:minimizedPath
-        })
+            
         return user
     },
     createProfile: async (id, data) => {

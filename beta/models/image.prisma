@@ -1,7 +1,7 @@
 model Image {
   id           Int    @id @default(autoincrement())
   image        String
-  crackedImage String?
+  // crackedImage String?
 
   postId    Int?
   post      Post? @relation(fields: [postId], references: [id])

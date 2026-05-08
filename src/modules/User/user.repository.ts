@@ -1,5 +1,5 @@
 import Prisma from "../../config/prismaClient.ts"
-import type { IRepositoryContract } from "./user.types.ts"
+import type { IRepositoryContract } from "./types/user.contract.ts"
 
 export const UserRepository:IRepositoryContract = {
     createUser: async (userData) => {
@@ -30,11 +30,7 @@ export const UserRepository:IRepositoryContract = {
             const user = await Prisma.user.findUnique({
                 where: { id },
                 include:{
-                    profile: {
-                        include: {
-                            avatar: true
-                        }
-                    }
+                    profile: true
                 }
             })
             if (!user) return null
@@ -46,59 +42,51 @@ export const UserRepository:IRepositoryContract = {
         }
     },
     getCode: async (code) => {
-        const codeFromDB = await Prisma.code.findUnique({
-            where: { code },
+        const codeFromDB = await Prisma.emailVerification.findUnique({
+            where: { code: String(code) },
             select: { userId: true }
         })
         if (!codeFromDB) return null
         return codeFromDB.userId
     },
-    createCode: async (userId, code) => {
-        await Prisma.code.create({
+    createCode: async (userId, code, expiresAt) => {
+        await Prisma.emailVerification.create({
             data: {
-                code,
-                userId
+                code: String(code),
+                userId,
+                expiresAt
             }
         })
     },
     deleteCodeByUserId: async (userId) => {
 
-        await Prisma.code.delete({
+        await Prisma.emailVerification.delete({
             where: { userId }
         })
     },
-    confirmUserById: async (userId) => {
-
-        await Prisma.user.update({
-            where: { id: userId },
-            data: { confirmedUser: true }
-        })
-    },
     updateUser: async (id, data) => {
+        const { username, ...profileData } = data
+        if (data.username) Prisma.user.update({
+            where: { id },
+            data: data
+        }) || null
+    
         return Prisma.profile.update({
             where: { userId: id },
-            data: data
+            data: profileData
         }) || null
     },
     createProfile: async (id, data) => {
+        if (data.username) Prisma.user.update({
+            where: { id },
+            data: data
+        }) || null
         return Prisma.profile.create({
             data: {
                 ...data,
-                userId:id
+                userId:id,
+                avatar: "media/avatar.png"
             }
         }) || null
-    },
-    avatar: async (id,data) => {
-        return Prisma.avatar.create({
-            data:{
-                profile:{
-                    connect: {
-                        userId: id
-                    }
-                },
-                avatar:data.avatar,
-                crackedAvatar: data.crackedAvatar
-            }
-        })
     }
 }      

@@ -1,16 +1,47 @@
-model Profile {
-    id Int @id @unique @default(autoincrement())
-    nickname String
-    username String @unique
-    userId Int @unique
-    user User @relation("profile_user",fields: [userId], references: [id]) 
-    birthday DateTime?
-    firstName String?
-    lastName String?
-    electronicSignature String?
-    showElectronicSignature Boolean @default(false)
-    showNickname Boolean @default(true)
-    avatar Avatar[] @relation("avatar_profile")
 
+model Profile {
+    id        Int   @id @default(autoincrement())
+
+    birth_date DateTime?
+    signature String?
+    avatar   String
+    pseudonym String
+    
+    userId Int @unique
+    user User @relation("UserProfile", fields: [userId], references: [id])
+    is_image_singnature Boolean  @default(false)
+    is_text_signature Boolean  @default(true)
+    friends       Profile[] @relation("ProfileFriends")
+    friendOf      Profile[] @relation("ProfileFriends") 
+    sentRequests       FriendsRequest[] @relation("SentRequests")
+    receivedRequests   FriendsRequest[] @relation("ReceivedRequests")
     albums Album[]
+}
+
+model FriendsRequest {
+    id Int @id @default(autoincrement())
+    fromProfileId Int
+    toProfileId Int
+    fromProfile Profile @relation("SentRequests", fields: [fromProfileId], references: [id])
+    toProfile Profile @relation("ReceivedRequests", fields: [toProfileId], references: [id])
+}
+model Album {
+    id Int @id @default(autoincrement())
+    name String
+    theme String 
+    year Int
+    created_at DateTime @default(now()) 
+    is_shown Boolean @default(true) 
+    is_default Boolean @default(false)
+    profileId Int
+    profile Profile @relation(fields: [profileId], references: [id])
+    photos AlbumImage[]
+}
+model AlbumImage {
+    id Int @id @default(autoincrement())
+    image String
+    created_at DateTime @default(now()) 
+    is_shown Boolean @default(true)
+    albumId Int
+    album Album @relation(fields: [albumId], references: [id])
 }

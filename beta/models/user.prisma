@@ -1,0 +1,24 @@
+model User {
+    id Int @id @unique @default(autoincrement())
+    email  String @unique   
+    password String 
+    addedAt DateTime @default(now())
+    // profileId Int? @unique
+    profile Profile? @relation("profile_user")
+
+
+    posts Post[]
+
+    likes Like[]
+
+    loves Love[]
+
+    views View[]
+
+    admins Admin[]
+
+    messages Message[]
+    members Member[]
+    code Code?
+    confirmedUser Boolean @default(false)
+}

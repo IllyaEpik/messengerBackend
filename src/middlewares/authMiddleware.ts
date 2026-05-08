@@ -1,7 +1,7 @@
 import type{ NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import { env } from "../config/env.ts";
-import type{ TokenPayload } from "../modules/User/user.types.ts";
+import type{ TokenPayload } from "../modules/User/types/user.types.ts";
 
 export async function authMiddleware(req: Request, res: Response, next: NextFunction) {
     const authHeader = req.headers.authorization

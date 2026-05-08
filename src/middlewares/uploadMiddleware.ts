@@ -14,8 +14,8 @@ export function procImgMiddleware(width: number, quality:number){
     return async (req: Request, res: Response, next: NextFunction) => {
         try {
             if (!req.file){
-                // // next(new Error("file validation error"))
-                // res.locals.data = ""
+                // next(new Error("file validation error"))
+                res.locals.data = "file validation error"
                 return
             }
             const fileName = `${Date.now()}.jpg`

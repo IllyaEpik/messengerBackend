@@ -32,8 +32,8 @@ export interface ImageUpload {
     size: number;
 }
 
-export type photoCreate = Omit<Prisma.AlbumPhotoCreateInput, "album">
-export type albumPhoto = Prisma.AlbumPhotoGetPayload<{}>
+export type photoCreate = Omit<Prisma.AlbumImageCreateInput, "album">
+export type albumPhoto = Prisma.AlbumImageGetPayload<{}>
 export interface repositoryContract {
     createAlbum:(data: albumCreate, userId: number) => Promise<albumOutput>
     getAlbums:(userId: number) => Promise<albumOutput[] | null>

@@ -1,20 +1,60 @@
+model Tag {
+    id Int @id @default(autoincrement())
+    name String @unique
+    posts Post[] @relation("PostTags")
+}
+
 model Post {
-  id      Int    @id @default(autoincrement())
-  title   String
-  content String
+    id Int @id @default(autoincrement())
+    title String
+    topic String?
+    content String
+    createdAt DateTime @default(now())
+    updated_at DateTime @updatedAt
+    authorId Int
+    author User @relation(fields: [authorId], references: [id])
+    tags Tag[] @relation("PostTags")
+    images PostImage[]
+    likes PostLike[]
+    hearts PostHeart[]
+    views PostView[]
+    links PostLink[]
+}
 
-  creatorId Int
-  creator   User @relation(fields: [creatorId], references: [id])
-
-  likes Like[]
-
-  loves Love[]
-
-  views View[]
-
-  tags Tag[]
-
-  links Link[]
-
-  images Image[]
+model PostImage {
+    id Int @id @default(autoincrement())
+    original_image String
+    compressed_image String
+    postId Int
+    post Post @relation(fields: [postId], references: [id])
+}
+model PostLike {
+    id Int @id @default(autoincrement())
+    userId Int
+    postId Int
+    user User @relation(fields: [userId], references: [id])
+    post Post @relation(fields: [postId], references: [id])
+    @@unique([userId, postId])
+}
+model PostHeart {
+    id Int @id @default(autoincrement())
+    userId Int
+    postId Int
+    user User @relation(fields: [userId], references: [id])
+    post Post @relation(fields: [postId], references: [id])
+    @@unique([userId, postId])
+}
+model PostView {
+    id Int @id @default(autoincrement())
+    userId Int
+    postId Int
+    user User @relation(fields: [userId], references: [id])
+    post Post @relation(fields: [postId], references: [id])
+    @@unique([userId, postId])
+}
+model PostLink {
+    id Int @id @default(autoincrement())
+    url String
+    postId Int
+    post Post @relation(fields: [postId], references: [id])
 }
