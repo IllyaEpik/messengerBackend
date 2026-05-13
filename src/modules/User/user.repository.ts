@@ -122,7 +122,12 @@ export const UserRepository:IRepositoryContract = {
             },
             include: {
                 friendOf: true,
-                friends: true
+                friends: true,
+                user: {
+                    select: {
+                        username: true
+                    }
+                }
             }
         })
         if (!friends) return []
@@ -139,6 +144,13 @@ export const UserRepository:IRepositoryContract = {
         //     }
         // })
         const recommendedFriends = await Prisma.profile.findMany({
+            include: {
+                user: {
+                    select: {
+                        username: true
+                    }
+                }
+            }
         })
         return recommendedFriends
     },
@@ -148,7 +160,16 @@ export const UserRepository:IRepositoryContract = {
                 toProfileId: userId
             },
             include: {
-                fromProfile: true
+                fromProfile: {
+                    include: {
+                        user: {
+                            select: {
+                                username: true
+                            }
+                        }
+                    }
+                },
+                
             }
         })
         return requests.map(request => request.fromProfile)
