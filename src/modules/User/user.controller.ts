@@ -19,11 +19,12 @@ export const UserController:IControllerContract = {
         }
     },
     RegistrationSecondPhase: async (req, res, next) =>{
-        console.log(req.params.code,"ewqwqwq")
+        // console.log(req.params.code,"ewqwqwq")
         try {
             const code = Number(req.params.code)
             const result = await UserService.secondPhaseOfRegistation(code)
             res.locals.data = result
+            // console.log(result)
             res.locals.succsesStatus = 201
             next()
         } catch (error) {
@@ -35,7 +36,9 @@ export const UserController:IControllerContract = {
         try {
             const userData = req.body
             const result = await UserService.login(userData)
+            // console.log(userData, result)
             res.locals.data = result
+            // console.log(result)
             next()
             
         } catch (error) {
@@ -46,6 +49,7 @@ export const UserController:IControllerContract = {
         try {
             const userId = Number(res.locals.userId)
             const result = await UserService.me(userId)
+
             res.locals.data = result
             next()
         } catch (error) {
@@ -57,11 +61,11 @@ export const UserController:IControllerContract = {
         try {
             const userUpdateData = req.body
             const userId = res.locals.userId
-            console.log(userUpdateData)
+            // console.log(userUpdateData)
             const files = req.files as updateProfileFile
             
             const result = await UserService.updateUser(userId, userUpdateData, files)
-            console.log(result)
+            // console.log(result)
             res.locals.data = result
             
             next()
@@ -75,6 +79,7 @@ export const UserController:IControllerContract = {
             const profileCreateData = req.body
             
             const userId = Number(res.locals.userId)
+            // console.log(req.body, userId, profileCreateData)
             const result = await UserService.createProfile(userId,profileCreateData)
             res.locals.data = result
             next()
@@ -85,11 +90,10 @@ export const UserController:IControllerContract = {
     },
     sendFriendRequest: async (req, res, next) => {
         try {
-            console.log(req.params.profile, res.locals.userId)
+            // console.log("send friend request", req.params.profile, res.locals.userId)
             const fromUserId = Number(res.locals.userId)
             const toUserId = Number(req.params.profile)
             const response = await UserService.sendFriendRequest(fromUserId, toUserId)
-
             res.locals.data = response || "Friend request sent|200" 
             next()
         } catch (error) {
@@ -99,6 +103,7 @@ export const UserController:IControllerContract = {
     },
     confirmFriendRequest: async (req, res, next) => {
         try {
+            // console.log("confirming friend request", req.params.fromUserId, res.locals.userId)
             const toUserId = Number(res.locals.userId)
             const fromUserId = Number(req.params.fromUserId)
             await UserService.confirmFriendRequest(fromUserId, toUserId)
@@ -120,16 +125,37 @@ export const UserController:IControllerContract = {
             res.status(500).json({ error })
         }
     },
-    // deleteFriend: async (req, res, next) => {
-    //     try {
-    //         const userId = Number(res.locals.userId)
-    //         const friendId = Number(req.params.friendId)
-    //         await UserService.deleteFriend(userId, friendId)
-    //         res.locals.data = "Friend deleted"
-    //         next()
-    //     } catch (error) {
-    //         console.error("Error in deleteFriend controller:", error)
-    //         res.status(500).json({ error })
-    //     }
-    // }
+    deleteFriend: async (req, res, next) => {
+        try {
+            // console.log("deleting friend", req.params.friendId, res.locals.userId)
+            const userId = Number(res.locals.userId)
+            const friendId = Number(req.params.friendId)
+            await UserService.deleteFriend(userId, friendId)
+            res.locals.data = "Friend deleted"
+            next()
+        } catch (error) {
+            console.error("Error in deleteFriend controller:", error)
+            res.status(500).json({ error })
+        }
+    },
+    removeRecommendations: async (req, res, next) => {
+        try {
+            // console.log("removing friend request", req.params.friendId, res.locals.userId)
+            const userId = Number(res.locals.userId)
+            const friendId = Number(req.params.friendId)
+            await UserService.removeRecommendations(userId, friendId)
+            res.locals.data = "Friend request removed"
+            res.locals.status = 204
+            next()
+        } catch (error) {
+            console.error("Error in removeFriendRequest controller:", error)
+            res.status(500).json({ error })
+        }
+    },
+    async getfriendById(req, res, next) {
+        const userId = Number(req.params.userId)
+        const user = await UserService.getfriendById(userId)
+        res.locals.data = user
+        next()
+    },
 }

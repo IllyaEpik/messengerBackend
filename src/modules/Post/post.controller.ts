@@ -12,10 +12,8 @@ export const postController: IControllerContract = {
                 ...(req.body.tags && {tags: req.body.tags.split(" ")}),
                 ...(req.body.links && {links: req.body.links.split(" ")}),
             }
-            console.log(data)
             
             const userId = Number(res.locals.userId)
-            console.log(req.files && req.files.length ,req.files)
             const files = req.files && req.files.length ? (req.files as Express.Multer.File[] || []).map(file => file.filename) : [];
             
             const post = await PostService.create(data,userId,files)
@@ -42,10 +40,11 @@ export const postController: IControllerContract = {
         try {
             const userId = Number(res.locals.userId)
             const skip = Number(req.query.skip) || 0
-            console.log(skip)
-            const post = await PostService.get(userId,skip)
+            const post = await PostService.get(req.query.userId || userId ,skip)
             
-            res.status(200).json(post)
+            res.locals.data = post
+            next()
+            // res.status(200).json(post)
         } catch (error) {
             next(error)
         }
@@ -54,8 +53,9 @@ export const postController: IControllerContract = {
         try {
             const userId = Number(res.locals.userId)
             const post = await PostService.getByUser(userId)
-            
-            res.status(200).json(post)
+            res.locals.data = post
+            next()
+            // res.status(200).json(post)
         } catch (error) {
             next(error)
         }

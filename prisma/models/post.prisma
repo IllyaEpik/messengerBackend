@@ -1,60 +1,112 @@
 model Tag {
-    id Int @id @default(autoincrement())
-    name String @unique
-    posts Post[] @relation("PostTags")
+  id                 BigInt               @id @default(autoincrement())
+  name               String               // @db.VarChar(100)
+  posts post_app_post_tags[]
+
+  @@map("post_app_tag")
 }
 
 model Post {
-    id Int @id @default(autoincrement())
-    title String
-    topic String?
-    content String
-    createdAt DateTime @default(now())
-    updated_at DateTime @updatedAt
-    authorId Int
-    author User @relation(fields: [authorId], references: [id])
-    tags Tag[] @relation("PostTags")
-    images PostImage[]
-    likes PostLike[]
-    hearts PostHeart[]
-    views PostView[]
-    links PostLink[]
+  id                 BigInt               @id @default(autoincrement())
+  title              String               // @db.VarChar(255)
+  topic              String?              // @db.VarChar(255)
+  content            String
+  created_at         DateTime    @default(now())         // @db.Timestamptz(6)
+  authorId           BigInt               @map("author_id")
+  updated_at         DateTime?            @updatedAt // @db.Timestamptz(6)
+  author             User                 @relation(fields: [authorId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+//   author             User                 @relation(fields: [authorId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "post_app_post_author_id_4cf2f14d_fk_user_app_user_id")
+  tags post_app_post_tags[]
+  hearts             PostHeart[]
+  images             PostImage[]
+  likes              PostLike[]
+  links              PostLink[]
+  views              PostView[]
+
+  @@index([authorId], map: "post_app_post_author_id_4cf2f14d")
+  @@map("post_app_post")
+}
+
+model post_app_post_tags {
+  id            BigInt @id @default(autoincrement())
+  post_id       BigInt
+  tag_id        BigInt
+  post_app_post Post   @relation(fields: [post_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  post_app_tag  Tag    @relation(fields: [tag_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+//   post_app_post Post   @relation(fields: [post_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "post_app_post_tags_post_id_b72298ea_fk_post_app_post_id")
+//   post_app_tag  Tag    @relation(fields: [tag_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "post_app_post_tags_tag_id_df0ee56c_fk_post_app_tag_id")
+
+  @@unique([post_id, tag_id], map: "post_app_post_tags_post_id_tag_id_f9d7c733_uniq")
+  @@index([post_id], map: "post_app_post_tags_post_id_b72298ea")
+  @@index([tag_id], map: "post_app_post_tags_tag_id_df0ee56c")
 }
 
 model PostImage {
-    id Int @id @default(autoincrement())
-    original_image String
-    compressed_image String
-    postId Int
-    post Post @relation(fields: [postId], references: [id])
+  id               BigInt @id @default(autoincrement())
+  postId           BigInt @map("post_id")
+  compressed_image String // @db.VarChar(100)
+  original_image   String // @db.VarChar(100)
+  post             Post   @relation(fields: [postId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+//   post             Post   @relation(fields: [postId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "post_app_postimage_post_id_f96e8718_fk_post_app_post_id")
+
+  @@index([postId], map: "post_app_postimage_post_id_f96e8718")
+  @@map("post_app_postimage")
 }
+
 model PostLike {
-    id Int @id @default(autoincrement())
-    userId Int
-    postId Int
-    user User @relation(fields: [userId], references: [id])
-    post Post @relation(fields: [postId], references: [id])
-    @@unique([userId, postId])
+  id     BigInt @id @default(autoincrement())
+  postId BigInt @map("post_id")
+  userId BigInt @map("user_id")
+  post   Post   @relation(fields: [postId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  user   User   @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+//   post   Post   @relation(fields: [postId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "post_app_postlike_post_id_fe24b1be_fk_post_app_post_id")
+//   user   User   @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "post_app_postlike_user_id_12715559_fk_user_app_user_id")
+
+  @@unique([userId, postId], map: "unique_post_like")
+  @@index([postId], map: "post_app_postlike_post_id_fe24b1be")
+  @@index([userId], map: "post_app_postlike_user_id_12715559")
+  @@map("post_app_postlike")
 }
+
 model PostHeart {
-    id Int @id @default(autoincrement())
-    userId Int
-    postId Int
-    user User @relation(fields: [userId], references: [id])
-    post Post @relation(fields: [postId], references: [id])
-    @@unique([userId, postId])
+  id     BigInt @id @default(autoincrement())
+  postId BigInt @map("post_id")
+  userId BigInt @map("user_id")
+  post   Post   @relation(fields: [postId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  user   User   @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+//   post   Post   @relation(fields: [postId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "post_app_postheart_post_id_556aaef5_fk_post_app_post_id")
+//   user   User   @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "post_app_postheart_user_id_e3112196_fk_user_app_user_id")
+
+  @@unique([userId, postId], map: "unique_post_hearts")
+  @@index([postId], map: "post_app_postheart_post_id_556aaef5")
+  @@index([userId], map: "post_app_postheart_user_id_e3112196")
+  @@map("post_app_postheart")
 }
+
 model PostView {
-    id Int @id @default(autoincrement())
-    userId Int
-    postId Int
-    user User @relation(fields: [userId], references: [id])
-    post Post @relation(fields: [postId], references: [id])
-    @@unique([userId, postId])
+  id     BigInt @id @default(autoincrement())
+  postId BigInt @map("post_id")
+  userId BigInt @map("user_id")
+  post   Post   @relation(fields: [postId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  user   User   @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+//   post   Post   @relation(fields: [postId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "post_app_postview_post_id_bfaa8cff_fk_post_app_post_id")
+//   user   User   @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "post_app_postview_user_id_3e80c157_fk_user_app_user_id")
+
+  @@unique([userId, postId], map: "unique_post_view")
+  @@index([postId], map: "post_app_postview_post_id_bfaa8cff")
+  @@index([userId], map: "post_app_postview_user_id_3e80c157")
+  @@map("post_app_postview")
 }
+
 model PostLink {
-    id Int @id @default(autoincrement())
-    url String
-    postId Int
-    post Post @relation(fields: [postId], references: [id])
-}
+  id     BigInt @id @default(autoincrement())
+  url    String // @db.VarChar(200)
+  postId BigInt @map("post_id")
+  post   Post   @relation(fields: [postId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+//   post   Post   @relation(fields: [postId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "post_app_postlink_post_id_38de8dee_fk_post_app_post_id")
+
+  @@index([postId], map: "post_app_postlink_post_id_38de8dee")
+  @@map("post_app_postlink")
+} 
+ 
+

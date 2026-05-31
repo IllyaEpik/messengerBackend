@@ -35,11 +35,11 @@ export interface ImageUpload {
 export type photoCreate = Omit<Prisma.AlbumImageCreateInput, "album">
 export type albumPhoto = Prisma.AlbumImageGetPayload<{}>
 export interface repositoryContract {
-    createAlbum:(data: albumCreate, userId: number) => Promise<albumOutput>
-    getAlbums:(userId: number) => Promise<albumOutput[] | null>
-    updateAlbum: (data: albumUpdate, id: number) => Promise<albumOutput>
-    addPhoto: (photo:photoCreate, id:number) => Promise<albumPhoto>
-    deleteAlbum: (id:number) => Promise<albumOutput>
+    createAlbum:(data: albumCreate, userId: bigint) => Promise<albumOutput>
+    getAlbums:(userId: bigint) => Promise<albumOutput[] | null>
+    updateAlbum: (data: albumUpdate, id: bigint) => Promise<albumOutput>
+    addPhoto: (photo:photoCreate, id:bigint) => Promise<albumPhoto>
+    deleteAlbum: (id:bigint) => Promise<albumOutput>
 }
 export interface serviceContract {
     createAlbum: (data: albumCreate, userId: number) => Promise<albumOutput | string>

@@ -19,7 +19,7 @@ export const albumRepository: repositoryContract = {
                             
                         },
                         include:{
-                            photos:{
+                            albumImage:{
                                 select:{
                                     image:true,
                                     is_shown:true
@@ -46,7 +46,10 @@ export const albumRepository: repositoryContract = {
                     },
                     year:data.year,
                     theme: data.topic,
-                    name:data.title
+                    name:data.title,
+                    is_default:false,
+                    is_shown:true,
+                    created_at: new Date()
                 },
                 omit:{
                     profileId:true
@@ -60,7 +63,6 @@ export const albumRepository: repositoryContract = {
     },
     async updateAlbum(data, id) {
         try {
-            console.log(data)
             const topic = data.topic
             const albums = await Prisma.album.update({
                 where:{
@@ -94,12 +96,14 @@ export const albumRepository: repositoryContract = {
         return await Prisma.albumImage.create({
             data:{
                 album:{
+                    
                     connect: {
                         id: id
                     }
                 },
                 image: photo.image ?? null,
-                is_shown:true
+                is_shown:true,
+                created_at: new Date()
             }
         })
     },
@@ -109,7 +113,7 @@ export const albumRepository: repositoryContract = {
                 id:id
             },
             include:{
-                photos:{
+                albumImage:{
                     select:{
                         image:true,
                         is_shown:true

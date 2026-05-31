@@ -4,7 +4,6 @@ import type{ IRepositoryContract } from "./post.types.ts";
 export const PostRepository: IRepositoryContract = {
     async create(data, userId,images) {
 
-        console.log(images)
         try {
             return Prisma.post.create({
                 data:{
@@ -12,18 +11,19 @@ export const PostRepository: IRepositoryContract = {
                     title:data.title,
                     content:data.content,
                     ...(data.tags && {tags: {
-                        connectOrCreate: data.tags.map((tag) => ({
-                            where: {name: tag},
-                            create: {name:tag},
-                            
-                        }))
-                        
-                    }}),
-                    ...(data.links && {links: {
-                        createMany: {data: data.links.map((link) => ({
-                            url:link
-                        }))}
-                    }}),
+                        create: data.tags.map((tagName: string) => ({
+                            post_app_tag: {        
+                                create: { name: tagName },
+                            },
+                        })),
+                    },}),
+                    ...(data.links && {
+                    links: {
+                        createMany: {
+                            data: data.links.map((link: string) => ({ url: link })),
+                        },
+                    },
+                }),
                     ...(images && {images: {
                         createMany: {data: images.map((image) => ({
                             compressed_image:image,
@@ -49,7 +49,9 @@ export const PostRepository: IRepositoryContract = {
                     },
                     tags:{
                         select:{
-                            name:true
+                            post_app_tag: {
+                                select: { name: true }
+                            }
                         }
                     },
                     images:{
@@ -113,7 +115,9 @@ export const PostRepository: IRepositoryContract = {
                     },
                     tags:{
                         select:{
-                            name:true
+                            post_app_tag: {
+                                select: { name: true }
+                            }
                         }
                     },
                     images:{

@@ -12,11 +12,11 @@ const outputDir = join(__dirname, "../../media/")
 
 export const albumService: serviceContract = {
     async createAlbum(data, userId) {
-        const album = await albumRepository.createAlbum(data,userId)
+        const album = await albumRepository.createAlbum(data,BigInt(userId))
         return album
     },
     async getAlbums(userId) {
-        const album = await albumRepository.getAlbums(userId)
+        const album = await albumRepository.getAlbums(BigInt(userId))
         
         if (!album) return "profile does not exist "
         return album
@@ -45,16 +45,16 @@ export const albumService: serviceContract = {
             .toFile(minimizedPath);
             await albumRepository.addPhoto({
                 image:`${timestamp}.jpg`
-            },albumId)
+            },BigInt(albumId))
 
         }
-        const album = await albumRepository.updateAlbum(validatedData,albumId)
+        const album = await albumRepository.updateAlbum(validatedData,BigInt(albumId))
         
         return album
     },
     async deleteAlbum(id, userId) {
         
-        const album = await albumRepository.deleteAlbum(id)
+        const album = await albumRepository.deleteAlbum(BigInt(id))
         
         return album
     }

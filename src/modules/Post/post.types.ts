@@ -45,7 +45,7 @@ export interface IControllerContract {
             any,
             any
         >,
-        res:Response<IPost[],{userId: number}>,
+        res:Response<IPost[]>,
         next:NextFunction
     ) => Promise<void>
     get: (
@@ -53,9 +53,9 @@ export interface IControllerContract {
             any,
             IPost[],
             any,
-            {skip?: number}
+            {skip?: number, userId?:number}
         >,
-        res:Response<IPost[],{userId: number}>,
+        res:Response<IPost[]>,
         next:NextFunction
     ) => Promise<void>
     update: (
@@ -116,21 +116,21 @@ export interface IServiceContract {
 
 export interface IRepositoryContract {
     create: (
-        data:createPost, userId:number, images: string[]
+        data:createPost, userId:bigint, images: string[]
     ) => Promise<IPost>
     getByUser: (
-        userId:number
+        userId:bigint
     ) => Promise<IPost[]>
-    get: (userId: number, skip:number ) => Promise<IPost[]>
+    get: (userId: bigint, skip:number ) => Promise<IPost[]>
     update: (
-        id: number,
-        userId: number,
+        id: bigint,
+        userId: bigint,
         data: updatePost, images:string[]
     ) => Promise<IPost>
     action: (
-        id: number,
-        userId: number,
+        id: bigint,
+        userId: bigint,
         action: actionPost
     ) => Promise<IPost>
-    delete: (id: number, userId: number) => Promise<IPost>
+    delete: (id: bigint, userId: bigint) => Promise<IPost>
 }

@@ -16,7 +16,7 @@ export function procImagesMiddleware(width: number, quality:number){
             const files = req.files as Express.Multer.File[];
 
             if (!files || files.length === 0) {
-                next() // Or handle as an error
+                return next() // Or handle as an error
             }
             await Promise.all(
                 files.map(async (image) => {

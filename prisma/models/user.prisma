@@ -1,24 +1,58 @@
 model User {
-    id    Int     @id @default(autoincrement())
-    username  String? @unique 
-    email String  @unique
-    password String
-    emailVerification EmailVerification? @relation("UserEmailVerification")
-    profile Profile? @relation("UserProfile")
-    chats Chat[] @relation("ChatParticipants")
-    adminChats Chat[] @relation("ChatAdmin")
-    messages Message[] @relation("MessageReaders")
-    sentMessages Message[] @relation("sentMessages")
-    posts Post[]
-    views PostView[]
-    likes PostLike[]
-    hearts PostHeart[]
+  id                             BigInt                           @id @default(autoincrement())
+  password                       String                           //@db.VarChar(128)
+  last_login                     DateTime?                        //@db.Timestamptz(6)
+  is_superuser                   Boolean
+  first_name                     String                           //@db.VarChar(150)
+  last_name                      String                           //@db.VarChar(150)
+  is_staff                       Boolean
+  is_active                      Boolean
+  date_joined                    DateTime                         //@db.Timestamptz(6)
+  username                       String?                          @unique(map: "user_app_user_username_e45e0961_uniq") // @db.VarChar(150)
+  email                          String                           @unique // @db.VarChar(254)
+  adminChats                     Chat[]                           @relation("ChatAdmin")
+  chatParticipants               ChatParticipants[]               @relation("ChatParticipants")
+  sentMessages                   Message[]                        @relation("sentMessages")
+  readers       chat_app_message_readers[]
+  django_admin_log               django_admin_log[]
+  posts                          Post[]
+  hearts                         PostHeart[]
+  likes                          PostLike[]
+  views                          PostView[]
+  profile                        Profile?                         @relation("UserProfile")
+  sentRequests                   FriendsRequest[]                 @relation("SentRequests")
+  receivedRequests               FriendsRequest[]                 @relation("ReceivedRequests")
+  user_app_user_groups           user_app_user_groups[]
+  user_app_user_user_permissions user_app_user_user_permissions[]
+  emailVerification EmailVerification[] @relation("UserEmailVerification")
+
+  @@index([email], map: "user_app_user_email_e59b5739_like")
+  @@index([username], map: "user_app_user_username_e45e0961_like")
+  @@map("user_app_user")
+}
+
+model FriendsRequest {
+  id           BigInt   @id @default(autoincrement())
+  status       String   // @db.VarChar(10)
+  created_at   DateTime @default(now())//@db.Timestamptz(6)
+  from_user_id BigInt
+  to_user_id   BigInt
+  from_user    User     @relation("SentRequests", fields: [from_user_id], references: [id])
+  to_user      User     @relation("ReceivedRequests", fields: [to_user_id], references: [id])
+  // from_user    User     @relation("SentRequests", fields: [from_user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "user_app_friendship_from_user_id_e1d46b12_fk_user_app_user_id")
+  // to_user      User     @relation("ReceivedRequests", fields: [to_user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "user_app_friendship_to_user_id_f5d68c80_fk_user_app_user_id")
+  @@unique([from_user_id, to_user_id], map: "user_app_friendship_from_user_id_to_user_id_1917f941_uniq")
+  @@index([from_user_id], map: "user_app_friendship_from_user_id_e1d46b12")
+  @@index([to_user_id], map: "user_app_friendship_to_user_id_f5d68c80")
+  @@map("user_app_friendship")
 }
 model EmailVerification {
-  id Int @id @default(autoincrement())
+  id BigInt @id @default(autoincrement())
   new_email String? @unique
   code String @unique
   expiresAt DateTime
-  userId Int @unique
+  userId BigInt @unique @map("user_id")
   user User @relation("UserEmailVerification",fields: [userId], references: [id])
+    // @@map("user_app_Email_Verification")
+    
 }
