@@ -103,13 +103,8 @@ export const UserRepository:IRepositoryContract = {
         }
 
         // Upsert profile: create if not exists, otherwise update pseudonym and avatar
-        const profile = await tx.profile.upsert({
-            where: { userId: id },
-            update: {
-                pseudonym,
-                avatar: "/avatar.png" // optional: reset avatar on update
-            },
-            create: {
+        const profile = await tx.profile.create({
+            data: {
                 userId: id,
                 pseudonym,
                 avatar: "/avatar.png",
@@ -396,6 +391,9 @@ export const UserRepository:IRepositoryContract = {
         })
         return user
     },
+    async getAllUsers(){
+        return await Prisma.user.findMany()
+    }
     // async remove
 }
 async function ok() {

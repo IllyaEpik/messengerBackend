@@ -19,5 +19,6 @@ router.get("/friends", authMiddleware, UserController.getFriends)
 router.delete("/delete-friend/:friendId", authMiddleware, UserController.deleteFriend)
 router.get("/block/:friendId", authMiddleware, UserController.removeRecommendations)
 router.get("/friend/:userId", authMiddleware, UserController.getfriendById)
+router.get("/all", UserController.getAllUsers)
 
 export default router

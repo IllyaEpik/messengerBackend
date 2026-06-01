@@ -7,7 +7,7 @@ export type IMessageUpdate = Prisma.MessageUpdateInput;
 export type IMessage = Prisma.MessageGetPayload<{
     include: {
         sender: true;
-        images: true;
+        messageImage: true;
         _count: {
             select:{
                 readers: true

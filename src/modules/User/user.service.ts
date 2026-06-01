@@ -185,5 +185,9 @@ export const UserService:IServiceContract = {
             }))
         }
     },
+    async getAllUsers() {
+        const users = await UserRepository.getAllUsers()
+        return users
+    },
 
 }

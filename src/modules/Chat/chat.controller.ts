@@ -42,7 +42,22 @@ export const chatController: IChatController = {
             return next();
         }
     },
-
+    async getChatByContact(req, res, next) {
+        const userId = Number(res.locals.userId);
+        const friendId = Number(req.params.friendId);
+        const result = await chatService.getChatByContact(userId, friendId);
+        res.locals.data = result;
+        res.locals.succsesStatus = 200;
+        return next();
+    },
+    async getChat(req, res, next) {
+        const userId = Number(res.locals.userId);
+        const chatId = Number(req.params.chatId);
+        const result = await chatService.getChat(userId, chatId);
+        res.locals.data = result;
+        res.locals.succsesStatus = 200;
+        return next();
+    },
     // isUserInChat: async (req: Request<any, any, any, { chatId: number; userId: number }>, res: Response, next: NextFunction) => {
     //     try {
     //         const chatId = Number(req.params.chatId ?? req.query.chatId ?? 0);

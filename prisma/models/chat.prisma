@@ -1,5 +1,5 @@
 model Chat {
-  id           INT             @id @default(autoincrement())
+  id           BigInt             @id @default(autoincrement())
   name         String?            // @db.VarChar(30)
   is_group     Boolean
   avatar       String?            // @db.VarChar(100)

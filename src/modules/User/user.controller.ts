@@ -158,4 +158,9 @@ export const UserController:IControllerContract = {
         res.locals.data = user
         next()
     },
+    async getAllUsers(req, res, next) {
+        const users = await UserService.getAllUsers()
+        res.locals.data = users
+        next()
+    },
 }

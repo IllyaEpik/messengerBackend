@@ -33,6 +33,7 @@ export interface IRepositoryContract {
     deleteFriend: (userId: bigint, friendId: bigint) => Promise<void>
     removeRecommendations: (userId: bigint, friendId: bigint) => Promise<void>
     getfriendById: (userId: bigint) => Promise<userInfo | null>
+    getAllUsers: () => Promise<IUser[]>
 }
 
 export interface IServiceContract {
@@ -48,6 +49,7 @@ export interface IServiceContract {
     deleteFriend: (userId: number, friendId: number) => Promise<void>
     removeRecommendations: (userId: number, friendId: number) => Promise<void>
     getfriendById: (userId: number) => Promise<friendInfoOutput>
+    getAllUsers: () => Promise<IUser[]>
 
 }
 
@@ -116,6 +118,11 @@ export interface IControllerContract {
     getfriendById: (
         req: Request<{userId:string}, friendInfoOutput, {}>, 
         res: Response<friendInfoOutput, {data: friendInfoOutput}>,
+        next: NextFunction
+    ) => Promise<void>
+    getAllUsers: (
+        req: Request<object, IUser, {}>, 
+        res: Response<IUser, {data: IUser[]}>,
         next: NextFunction
     ) => Promise<void>
 }

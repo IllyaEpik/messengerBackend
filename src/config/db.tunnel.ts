@@ -4,7 +4,8 @@ const sshOptions = {
     host: "ssh.pythonanywhere.com",
     port: 22,
     username: "WorldITSocialNetwork",
-    password: process.env.USER_PASSWORD
+    password: process.env.USER_PASSWORD,
+    readyTimeout: 60000
 }
 
 const tunnelOptions = {

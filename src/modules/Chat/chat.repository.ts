@@ -7,13 +7,33 @@ export const chatRepository: IChatRepository = {
             
             const chat = await Prisma.chat.create({
                 data,
-                include: {
+                select: {
                     participants: {
                         include: {
-                            user: true,
+                            user: {
+                                select: {
+                                    username: true,
+                                    id:true
+                                }
+                            },
+                            
                         }
                     },
                     admin: true,
+                    id: true,
+                    name: true,
+                    avatar: true,
+                    is_group: true,
+                    messages: {
+                        orderBy: {
+                            created_at: "desc"
+                        },
+                        take: 1,
+                        select: {
+                            text: true,
+                            created_at: true
+                        }
+                    }
                 }
             });
             return chat;
@@ -52,13 +72,27 @@ export const chatRepository: IChatRepository = {
                         }
                     }
                 },
-                include: {
+                select: {
                     participants: {
                         include: {
                             user: true,
                         }
                     },
                     admin: true,
+                    id: true,
+                    name: true,
+                    avatar: true,
+                    is_group: true,
+                    messages: {
+                        orderBy: {
+                            created_at: "desc"
+                        },
+                        take: 1,
+                        select: {
+                            text: true,
+                            created_at: true
+                        }
+                    }
                 }
             });
             return chats;
@@ -69,7 +103,7 @@ export const chatRepository: IChatRepository = {
 
     isUserInChat: async (chatId, userId) => {
         try {
-            const userInChat = await Prisma.chat.findFirst({
+            const userInChat = await Prisma.chat.findUnique({
                 where: {
                     id: chatId,
                     participants: {
@@ -77,11 +111,97 @@ export const chatRepository: IChatRepository = {
                             userId,
                         }
                     }
-                }
+                },
+                
             });
             return !!userInChat;
         } catch (error) {
             throw error;
         }
-    }
+    },
+    async getChatByUsers(userId, friendId) {
+        try {
+            const chat = await Prisma.chat.findFirst({
+                where: {
+                    is_group:false,
+                    AND: [
+                        { participants: { some: { userId: userId}}},
+                        { participants: { some: { userId: friendId}}}
+                    ]
+                },
+                select: {
+                    id:true,
+                    name: true,
+                    avatar: true,
+                    is_group: true,
+                    participants: {
+                        select: {
+                            user: {
+                                select: {
+                                    username: true,
+                                    id:true
+                                }
+                            }
+                        }
+                    },
+                    messages: {
+                        orderBy: {
+                            created_at: "desc"
+                        },
+                        take: 1,
+                        select: {
+                            text: true,
+                            created_at: true
+                        }
+                    }
+                }
+            });
+            return chat;
+        } catch (error) {
+            throw error;
+        }
+    },
+    async getUserByChatId(userId, chatId) {
+        try {
+            const chat = await Prisma.chat.findUnique({
+                where: {
+                    id:chatId,
+                    participants: {
+                        some: {
+                            userId:userId
+                        }
+                    }
+                },
+                select: {
+                    id:true,
+                    avatar:true,
+                    is_group: true,
+                    name: true,
+                    participants: {
+                        select: {
+                            user: {
+                                select: {
+                                    username: true,
+                                    id:true
+                                }
+                            }
+                        }
+                    },
+                    messages: {
+                        orderBy: {
+                            created_at: "desc"
+                        },
+                        take: 1,
+                        select: {
+                            text: true,
+                            created_at: true
+                        }
+                    }
+                }
+            });
+            return chat;
+        } catch (error) {
+            throw error;
+        }
+    },
 }

@@ -20,5 +20,7 @@ router.patch("/:chatId",
 // router.delete("/:id", authMiddleware, postController.delete)
 
 router.get("/:userId", authMiddleware, chatController.getByUserId)
+router.get("/contact/:friendId", authMiddleware, chatController.getChatByContact)
+router.get("/chat/:chatId", authMiddleware, chatController.getChat)
 
 export default router

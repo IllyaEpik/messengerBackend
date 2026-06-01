@@ -8,7 +8,7 @@ export const messageRepository: IMessageRepository = {
             include: {
                 sender: true,
                 readers: true,
-                images: true,
+                messageImage: true,
                 chat: true,
                 _count: {
                     select: {
@@ -27,7 +27,7 @@ export const messageRepository: IMessageRepository = {
             include: {
                 sender: true,
                 readers: true,
-                images: true,
+                messageImage: true,
                 chat: true,
                 _count: {
                     select: {
@@ -47,7 +47,7 @@ export const messageRepository: IMessageRepository = {
             take,
             include: {
                 sender: true,
-                images: true,
+                messageImage: true,
                 _count: {
                     select:{
                         readers: true
@@ -71,7 +71,7 @@ export const messageRepository: IMessageRepository = {
             include: {
                 sender: true,
                 readers: true,
-                images: true,
+                messageImage: true,
                 chat: true,
                 _count:{
                     select: {
