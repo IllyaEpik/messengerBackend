@@ -24,6 +24,7 @@ export const chatRepository: IChatRepository = {
                     name: true,
                     avatar: true,
                     is_group: true,
+                    adminId: true,
                     messages: {
                         orderBy: {
                             created_at: "desc"
@@ -44,6 +45,7 @@ export const chatRepository: IChatRepository = {
 
     update: async (data, chatId) => {
         try {
+            
             const chat = await Prisma.chat.update({
                 where: { id: chatId },
                 data,
@@ -60,6 +62,24 @@ export const chatRepository: IChatRepository = {
         } catch (error) {
             throw error;
         }
+    },
+    async getAllParticipants(chatId) {
+        const existingParticipants = await Prisma.chatParticipants.findMany({
+            where: { chatId },
+            select: { userId: true }
+        });
+        return existingParticipants
+    },
+    async deleteSelectedParticipants(userIds, chatId) {
+        const existingParticipants = await Prisma.chatParticipants.deleteMany({
+            where: { 
+                chatId,
+                userId: { in: userIds },
+
+            },  
+            
+        });
+        return null
     },
 
     getByUserId: async (userId) => {
@@ -78,7 +98,7 @@ export const chatRepository: IChatRepository = {
                             user: true,
                         }
                     },
-                    admin: true,
+                    adminId: true,
                     id: true,
                     name: true,
                     avatar: true,
@@ -133,6 +153,7 @@ export const chatRepository: IChatRepository = {
                     id:true,
                     name: true,
                     avatar: true,
+                    adminId:true,
                     is_group: true,
                     participants: {
                         select: {
@@ -177,6 +198,7 @@ export const chatRepository: IChatRepository = {
                     avatar:true,
                     is_group: true,
                     name: true,
+                    adminId:true,
                     participants: {
                         select: {
                             user: {
@@ -204,4 +226,55 @@ export const chatRepository: IChatRepository = {
             throw error;
         }
     },
+    async deleteChat(userId, chatId) {
+        try {
+
+            await Prisma.chatParticipants.deleteMany({ where: { chatId } });
+            await Prisma.message.deleteMany({ where: { chatId } });
+            const chat = await Prisma.chat.delete({
+                where: {
+                    id:chatId,
+                    OR: [
+                        {
+                            adminId:userId
+                        },
+                        {
+                            is_group: false
+                        }
+                    ]
+                },
+                select: {
+                    id:true,
+                    avatar:true,
+                    is_group: true,
+                    name: true,
+                    adminId:true,
+                    participants: {
+                        select: {
+                            user: {
+                                select: {
+                                    username: true,
+                                    id:true
+                                }
+                            }
+                        }
+                    },
+                    messages: {
+                        orderBy: {
+                            created_at: "desc"
+                        },
+                        take: 1,
+                        select: {
+                            text: true,
+                            created_at: true
+                        }
+                    }
+                }
+            });
+            console.log(chat)
+            return chat;
+        } catch (error) {
+            throw error;
+        }
+    }
 }

@@ -14,6 +14,7 @@ export const MessageSocketController: MessageSocketControllerContract = {
     async sendMessage(socketServer, socket, rawData) {
         try {
             let data = rawData;
+            
             console.log(data, "is instrest", data.text)
             if (typeof rawData === 'string') {
                 try {

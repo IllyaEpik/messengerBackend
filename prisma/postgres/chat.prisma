@@ -4,7 +4,7 @@ model Chat {
   is_group     Boolean
   avatar       String?            // @db.VarChar(100)
   adminId      BigInt?            @map("admin_id")
-  admin        User?              @relation("ChatAdmin", fields: [adminId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  admin        User?              @relation("ChatAdmin", fields: [adminId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 //   admin        User?              @relation("ChatAdmin", fields: [adminId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "chat_app_chat_admin_id_f1deddb9_fk_user_app_user_id")
   participants ChatParticipants[] @relation("ChatParticipants")
   messages     Message[]
@@ -19,8 +19,8 @@ model Message {
   created_at               DateTime     @default(now())              //@db.Timestamptz(6)
   chatId                   BigInt                     @map("chat_id")
   senderId                 BigInt?                    @map("sender_id")
-  chat                     Chat                       @relation(fields: [chatId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  sender                   User?                      @relation("sentMessages", fields: [senderId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  chat                     Chat                       @relation(fields: [chatId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  sender                   User?                      @relation("sentMessages", fields: [senderId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 //   chat                     Chat                       @relation(fields: [chatId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "chat_app_message_chat_id_a7824698_fk_chat_app_chat_id")
 //   sender                   User?                      @relation("sentMessages", fields: [senderId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "chat_app_message_sender_id_03c5fae9_fk_user_app_user_id")
   readers chat_app_message_readers[]
@@ -35,8 +35,8 @@ model ChatParticipants {
   id     BigInt @id @default(autoincrement())
   chatId BigInt @map("chat_id")
   userId BigInt @map("user_id")
-  chat   Chat   @relation("ChatParticipants", fields: [chatId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  user   User   @relation("ChatParticipants", fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  chat   Chat   @relation("ChatParticipants", fields: [chatId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  user   User   @relation("ChatParticipants", fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 //   chat   Chat   @relation("ChatParticipants", fields: [chatId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "chat_app_chat_users_chat_id_5bba5169_fk_chat_app_chat_id")
 //   user   User   @relation("ChatParticipants", fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "chat_app_chat_users_user_id_7aff58dc_fk_user_app_user_id")
 

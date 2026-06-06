@@ -87,3 +87,7 @@ export type updateProfileFile = {
     avatar?: Express.Multer.File[],
     electronicSignature?: Express.Multer.File[]
 }
+export interface pagination {
+    recommends?: number
+    requests?: number
+}

@@ -116,8 +116,11 @@ export const UserController:IControllerContract = {
     },
     getFriends: async (req, res, next) => {
         try {
+            
             const userId = Number(res.locals.userId)
-            const result = await UserService.getFriends(userId)
+            // const pagination = req.query
+            // const { recommends, requests } = req.query
+            const result = await UserService.getFriends(userId, req.query)
             res.locals.data = result
             next()
         } catch (error) {

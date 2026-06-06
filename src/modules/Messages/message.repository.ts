@@ -40,11 +40,12 @@ export const messageRepository: IMessageRepository = {
     },
 
     getByChat: async (chatId, skip = 0, take = 20) => {
+        console.log(chatId, skip, take, "getByChat");
         const messages = await Prisma.message.findMany({
             where: { chatId },
             orderBy: { created_at: "desc" },
-            skip,
-            take,
+            skip:0,
+            take:40,
             include: {
                 sender: true,
                 messageImage: true,
@@ -57,6 +58,7 @@ export const messageRepository: IMessageRepository = {
             },
             
         });
+        console.log(messages.length, "messages");
         return messages;
     },
 

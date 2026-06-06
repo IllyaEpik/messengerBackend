@@ -12,6 +12,11 @@ export type IChat = Prisma.ChatGetPayload<{
         }
     }
 }>
+export type existParticipants = Prisma.ChatParticipantsGetPayload<{
+    select: {
+        userId: true
+    }
+}>
 
 export type IChatContact = Prisma.ChatGetPayload<{
     select: {
@@ -19,6 +24,7 @@ export type IChatContact = Prisma.ChatGetPayload<{
         is_group: true,
         name: true,
         avatar: true,
+        adminId: true,
         participants: {
             select: {
                 user: {
@@ -42,13 +48,13 @@ export type IChatContact = Prisma.ChatGetPayload<{
         }
     }
 }>
-
 export interface IChatCreateInput {
-    users: number[];
-    Isgroup?: boolean
+    users: string[] | number[];
+    Isgroup?: string
     avatar?: string
     name?: string
 }
+
 export interface IChatContactOutput {
     id: number
     chatName: string
@@ -56,6 +62,19 @@ export interface IChatContactOutput {
     isGroup: boolean
     time: Date | string
     message: string
+}
+export interface IChatContactDetailed {
+    id: number
+    chatName: string
+    avatar: string 
+    isGroup: boolean
+    time: Date | string
+    message: string
+    isAdmin: boolean
+    users: {
+        username: string
+        id: number
+    }[]
 }
 // export interface IChatContactInput {
 
@@ -68,16 +87,20 @@ export type IChatRepository = {
     isUserInChat: (chatId: bigint, userId: bigint) => Promise<boolean>
     getChatByUsers: (userId: bigint, friendId: bigint) => Promise<IChatContact | null>
     getUserByChatId: (userId:bigint, chatId: bigint) => Promise<IChatContact | null>
+    deleteChat: (userId: bigint, chatId: bigint) => Promise<IChatContact | null>
+    getAllParticipants: (chatId: bigint) => Promise<existParticipants[]>
+    deleteSelectedParticipants: (userIds: bigint[], chatId: bigint) => Promise<null | undefined>
 }
 
 
 export type IChatService = {
-    createChat: (data: IChatCreateInput) => Promise<IChatContact | string>
-    updateChat: (data: IChatUpdate, chatId: number) => Promise<IChat | string>
+    createChat: (data: IChatCreateInput, userId: number, avatar?: string) => Promise<IChatContact | string>
+    updateChat: (data: IChatCreateInput, chatId: number, avatar?: string ) => Promise<IChat | string>
     getByUserId: (userId: number) => Promise<IChatContactOutput[] | string>
     isUserInChat: (chatId: number, userId: number) => Promise<boolean | string>
     getChatByContact: (userId: number, friendId: number) => Promise<IChatContactOutput | string>
-    getChat: (userId: number, chatId: number) => Promise<IChatContactOutput | string>
+    getChat: (userId: number, chatId: number) => Promise<IChatContactDetailed | string>
+    deleteChat: (userId: number, chatId: number) => Promise<IChatContactOutput | string>
 }
 
 export type IChatController = {
@@ -87,7 +110,7 @@ export type IChatController = {
         next: NextFunction
     ) => void,
     update: (
-        req: Request<{chatId: string}, any, IChatUpdate>, 
+        req: Request<{chatId: string}, any, IChatCreateInput>, 
         res: Response<IChat>,
         next: NextFunction
     ) => void,
@@ -103,9 +126,15 @@ export type IChatController = {
     ) => void
     getChat: (
         req: Request<{chatId: string}, any, any>, 
+        res: Response<IChatContactDetailed>,
+        next: NextFunction
+    ) => void
+    deleteChat: (
+        req: Request<{chatId: string}, any, any>, 
         res: Response<IChatContactOutput>,
         next: NextFunction
     ) => void
+
     // getChatByContact: (userId: bigint, friendId: bigint) => Promise<IChatContactOutput>
     // isUserInChat: (
     //     req: Request<any, any, any, {chatId: number, userId: number}>, 

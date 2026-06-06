@@ -5,7 +5,7 @@ import process from "node:process";
 import { defineConfig } from "prisma/config";
 
 export default defineConfig({
-  schema: "prisma/models",
+  schema: "prisma/postgres",
   migrations: {
     path: "prisma/migrations",
   },

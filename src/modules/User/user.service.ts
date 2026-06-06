@@ -147,8 +147,8 @@ export const UserService:IServiceContract = {
     confirmFriendRequest: async (fromUserId, toUserId) => {
         await UserRepository.confirmFriendRequest(BigInt(fromUserId), BigInt(toUserId))
     },
-    getFriends: async (userId) => {
-        const friends = await UserRepository.getFriends(BigInt(userId))
+    getFriends: async (userId, pagination) => {
+        const friends = await UserRepository.getFriends(BigInt(userId), pagination)
         const friendRequests = await UserRepository.getFriendRequests(BigInt(userId))
         const exceptions = friends.concat(friendRequests).map(friend => friend.userId).filter(id => id !== null)
         const friendsRecommneds = await UserRepository.getRecommendedFriends(BigInt(userId),exceptions)
@@ -167,7 +167,7 @@ export const UserService:IServiceContract = {
     },
     async getfriendById(userId) {
         const user = await UserRepository.getfriendById(BigInt(userId))
-        if (!user || !user.profile) throw new Error("wrong user")
+        if (!user || !user.profile) throw new Error(`wrong user, ${!user} ${!user?.profile}`)
         return {
             readers: user.posts.reduce((sum, item) => sum + item._count.views, 0),
             frieds: user._count.receivedRequests + user._count.sentRequests,

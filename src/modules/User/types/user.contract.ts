@@ -13,7 +13,8 @@ import type{
     IUser,
     gottenFriends,
     friendInfoOutput,
-    userInfo
+    userInfo,
+    pagination
  } from "./user.types.ts";
 export interface IRepositoryContract {
     createUser: (user:UserCreate) => Promise<UserSecurityWithId | null>
@@ -27,7 +28,7 @@ export interface IRepositoryContract {
     createProfile: (id: bigint, data: ProfileCreate) => Promise<IProfile | null>
     sendFriendRequest: (fromUserId: bigint, toUserId: bigint) => Promise<void>
     confirmFriendRequest: (fromUserId: bigint, toUserId: bigint) => Promise<void>
-    getFriends: (userId: bigint) => Promise<IProfile[]>
+    getFriends: (userId: bigint, pagination: pagination) => Promise<IProfile[]>
     getFriendRequests: (userId: bigint) => Promise<IProfile[]>
     getRecommendedFriends: (userId: bigint, exceptions:bigint[]) => Promise<IProfile[]>
     deleteFriend: (userId: bigint, friendId: bigint) => Promise<void>
@@ -45,7 +46,7 @@ export interface IServiceContract {
     createProfile: (id: number, data: ProfileCreate) => Promise<IProfile | string>
     sendFriendRequest: (fromUserId: number, toUserId: number) => Promise<void | string>
     confirmFriendRequest: (fromUserId: number, toUserId: number) => Promise<void >
-    getFriends: (userId: number) => Promise<gottenFriends | string>
+    getFriends: (userId: number, pagination: pagination) => Promise<gottenFriends | string>
     deleteFriend: (userId: number, friendId: number) => Promise<void>
     removeRecommendations: (userId: number, friendId: number) => Promise<void>
     getfriendById: (userId: number) => Promise<friendInfoOutput>
@@ -101,7 +102,7 @@ export interface IControllerContract {
         next: NextFunction
     ) => Promise<void>
     getFriends: (
-        req: Request<{}, IProfile[] | IError | string, {}>, 
+        req: Request<{}, IProfile[] | IError | string, {}, pagination>, 
         res: Response<IProfile[] | IError | string>,
         next: NextFunction
     ) => Promise<void>

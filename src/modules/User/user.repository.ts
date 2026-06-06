@@ -169,7 +169,6 @@ export const UserRepository:IRepositoryContract = {
                 OR: [
                     { to_user_id: userId },    // Incoming requests
                     { from_user_id: userId },   // Outgoing requests
-                    
                 ],
                 status:"accepted"
             },
@@ -254,7 +253,8 @@ export const UserRepository:IRepositoryContract = {
             select: {
                 to_user_id: true,
                 from_user_id: true
-            }
+            },
+            take:15
         })
 
         const requestUserIds = friendRequests.flatMap(req => [

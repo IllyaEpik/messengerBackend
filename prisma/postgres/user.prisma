@@ -13,7 +13,7 @@ model User {
   adminChats                     Chat[]                           @relation("ChatAdmin")
   chatParticipants               ChatParticipants[]               @relation("ChatParticipants")
   sentMessages                   Message[]                        @relation("sentMessages")
-  readers       chat_app_message_readers[]
+  readers                        chat_app_message_readers[]
   django_admin_log               django_admin_log[]
   posts                          Post[]
   hearts                         PostHeart[]

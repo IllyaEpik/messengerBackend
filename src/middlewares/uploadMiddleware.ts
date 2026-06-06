@@ -13,11 +13,13 @@ export const uploadMiddleware = multer({ storage: memoryStorage() })
 export function procImgMiddleware(width: number, quality:number){
     return async (req: Request, res: Response, next: NextFunction) => {
         try {
+            console.log(req.file)
             if (!req.file){
-                // next(new Error("file validation error"))
                 res.locals.data = "file validation error"
+                next()
                 return
             }
+            console.log()
             const fileName = `${Date.now()}.jpg`
             const filePathOriginal = join(originalDir, fileName);
             const filePathThumb = join(thumbDir, fileName);
