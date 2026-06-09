@@ -1,6 +1,6 @@
 export class AppError extends Error {
 	public readonly code: number;
-	constructor(message: string, code: number ) {
+	constructor(message: string, code: number) {
 		super(message);
 		this.code = code;
 	}
@@ -39,4 +39,4 @@ export class AuthenticationError extends AppError {
 export const PrismaErrors = {
 	NOT_FOUND: "P2025",
 	CONFLICT: "P2002",
-}
+};

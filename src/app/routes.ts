@@ -7,7 +7,6 @@ import { Router } from "express";
 
 export const AppRouter = Router();
 
-
 AppRouter.use("/users/", userRouter);
 
 AppRouter.use("/albums/", albumsRouter);

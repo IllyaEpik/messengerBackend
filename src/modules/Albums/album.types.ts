@@ -1,99 +1,78 @@
-import type{ Response, Request, NextFunction } from "express";
+import type { Response, Request, NextFunction } from "express";
 import Prisma from "../../config/prisma.ts";
 
 type albumCreate = {
-    title:string
-    year:number
-    topic:string
-}
+	title: string;
+	year: number;
+	topic: string;
+};
 // type albumUpdate = Prisma.AlbumUpdateInput
 type albumUpdate = {
-    title?:string
-    year?:number
-    topic?:string
-}
+	title?: string;
+	year?: number;
+	topic?: string;
+};
 type albumOutput = Prisma.AlbumGetPayload<{
-    omit:{
-        profileId:true,
-        topicId:true
-    }
-}>
+	omit: {
+		profileId: true;
+		topicId: true;
+	};
+}>;
 type locals = {
-    userId:number
-    succsesStatus?: number
-    data?: object | string
-}
+	userId: number;
+	succsesStatus?: number;
+	data?: object | string;
+};
 export interface ImageUpload {
-    fieldname: string;
-    originalname: string;
-    encoding: string;
-    mimetype: string;
-    buffer: Buffer;
-    size: number;
+	fieldname: string;
+	originalname: string;
+	encoding: string;
+	mimetype: string;
+	buffer: Buffer;
+	size: number;
 }
 
-export type photoCreate = Omit<Prisma.AlbumImageCreateInput, "album">
-export type albumPhoto = Prisma.AlbumImageGetPayload<{}>
+export type photoCreate = Omit<Prisma.AlbumImageCreateInput, "album">;
+export type albumPhoto = Prisma.AlbumImageGetPayload<{}>;
 export interface repositoryContract {
-    createAlbum:(data: albumCreate, userId: bigint) => Promise<albumOutput>
-    getAlbums:(userId: bigint) => Promise<albumOutput[] | null>
-    updateAlbum: (data: albumUpdate, id: bigint) => Promise<albumOutput>
-    addPhoto: (photo:photoCreate, id:bigint) => Promise<albumPhoto>
-    deleteAlbum: (id:bigint) => Promise<albumOutput>
+	createAlbum: (data: albumCreate, userId: bigint) => Promise<albumOutput>;
+	getAlbums: (userId: bigint) => Promise<albumOutput[] | null>;
+	updateAlbum: (data: albumUpdate, id: bigint) => Promise<albumOutput>;
+	addPhoto: (photo: photoCreate, id: bigint) => Promise<albumPhoto>;
+	deleteAlbum: (id: bigint) => Promise<albumOutput>;
 }
 export interface serviceContract {
-    createAlbum: (data: albumCreate, userId: number) => Promise<albumOutput | string>
-    getAlbums: (userId: number) => Promise<albumOutput[] | string>
-    updateAlbum: (data: albumUpdate, id: number,image?:ImageUpload) => Promise<albumOutput | string>
-    deleteAlbum: (id:number,userId:number) => Promise<albumOutput>
+	createAlbum: (
+		data: albumCreate,
+		userId: number,
+	) => Promise<albumOutput | string>;
+	getAlbums: (userId: number) => Promise<albumOutput[] | string>;
+	updateAlbum: (
+		data: albumUpdate,
+		id: number,
+		image?: ImageUpload,
+	) => Promise<albumOutput | string>;
+	deleteAlbum: (id: number, userId: number) => Promise<albumOutput>;
 }
 export interface controllerContract {
-    createAlbum: (
-        req:Request<
-            any,
-            albumOutput,
-            albumCreate,
-            any,
-            locals
-            >,
-        res:Response<albumOutput,locals>,
-        next:NextFunction
-    
-    ) => Promise<void>
-    getAlbums: (
-        req:Request<
-            any,
-            albumOutput[],
-            any,
-            any,
-            locals
-            >,
-        res:Response<albumOutput[],locals>,
-        next:NextFunction
-    
-    ) => Promise<void>
-    updateAlbum: (
-        req:Request<
-            {id:string},
-            albumOutput,
-            albumUpdate,
-            any,
-            locals
-            >,
-        res:Response<albumOutput | string,locals>,
-        next:NextFunction
-    
-    ) => Promise<void>
-    deleteAlbum: (
-        req:Request<
-            {id:string},
-            albumOutput,
-            any,
-            any,
-            locals
-            >,
-        res:Response<albumOutput | string,locals>,
-        next:NextFunction
-    
-    ) => Promise<void>
+	createAlbum: (
+		req: Request<any, albumOutput, albumCreate, any, locals>,
+		res: Response<albumOutput, locals>,
+		next: NextFunction,
+	) => Promise<void>;
+	getAlbums: (
+		req: Request<any, albumOutput[], any, any, locals>,
+		res: Response<albumOutput[], locals>,
+		next: NextFunction,
+	) => Promise<void>;
+	updateAlbum: (
+		req: Request<{ id: string }, albumOutput, albumUpdate, any, locals>,
+		res: Response<albumOutput | string, locals>,
+		next: NextFunction,
+	) => Promise<void>;
+	deleteAlbum: (
+		req: Request<{ id: string }, albumOutput, any, any, locals>,
+		res: Response<albumOutput | string, locals>,
+		next: NextFunction,
+	) => Promise<void>;
 }

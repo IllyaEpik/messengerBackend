@@ -11,18 +11,16 @@ import { Pool } from "pg";
 // 	adapter,
 // })
 
-
-
 const pool = new Pool({
- connectionString: env.DATABASE_URL,
- max: 2,    // всего одно соединение
-  idleTimeoutMillis: 0,
+	connectionString: env.DATABASE_URL,
+	max: 2, // всего одно соединение
+	idleTimeoutMillis: 0,
 });
 
 const adapter = new PrismaPg(pool);
 
 const client = new PrismaClient({
- adapter,
+	adapter,
 });
 
 export default client;
