@@ -15,7 +15,7 @@ export const messageService: IMessageService = {
                 chat: { connect: { id: data.chatId } },
                 sender: { connect: { id: senderId } },
                 ...(data.images && data.images.length > 0 && {
-                    images: { create: data.images.map(img => ({ image: img })) }
+                    messageImage: { create: data.images.map(img => ({ image: img })) }
                 }),
             };
             console.log(createData)

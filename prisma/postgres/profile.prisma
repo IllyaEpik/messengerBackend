@@ -1,30 +1,28 @@
 model Profile {
   id                 BigInt    @id @default(autoincrement())
-  birth_date         DateTime? //@db.Date
-  signature          String?   //@db.VarChar(100)
-  avatar             String?   //@db.VarChar(100)
-  pseudonym          String?   //@db.VarChar(50)
+  birth_date         DateTime? @db.Date
+  signature          String?   @db.VarChar(100)
+  avatar             String?   @db.VarChar(100)
+  pseudonym          String?   @db.VarChar(50)
   is_text_signature  Boolean
   is_image_signature Boolean
   userId             BigInt?   @unique @map("user_id")
   albums             Album[]
-  user               User?     @relation("UserProfile", fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-//   user               User?     @relation("UserProfile", fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "profile_app_profile_user_id_296a7b55_fk_user_app_user_id")
+  user               User?     @relation("UserProfile", fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "profile_app_profile_user_id_296a7b55_fk_user_app_user_id")
 
   @@map("profile_app_profile")
 }
 
 model Album {
-  id                     BigInt                   @id @default(autoincrement())
-  name                   String                   // @db.VarChar(100)
-  theme                  String?                  // @db.VarChar(50)
-  year                   Int?
-  is_shown               Boolean
-  is_default             Boolean
-  created_at             DateTime                 // @db.Timestamptz(6)
-  profileId              BigInt                   @map("profile_id")
-  profile                Profile                  @relation(fields: [profileId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-//   profile                Profile                  @relation(fields: [profileId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "profile_app_album_profile_id_7414a460_fk_profile_app_profile_id")
+  id         BigInt       @id @default(autoincrement())
+  name       String       @db.VarChar(100)
+  theme      String?      @db.VarChar(50)
+  year       Int?
+  is_shown   Boolean
+  is_default Boolean
+  created_at DateTime     @db.Timestamptz(6)
+  profileId  BigInt       @map("profile_id")
+  profile    Profile      @relation(fields: [profileId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "profile_app_album_profile_id_7414a460_fk_profile_app_profile_id")
   albumImage albumImage[]
 
   @@index([profileId], map: "profile_app_album_profile_id_7414a460")
@@ -32,13 +30,12 @@ model Album {
 }
 
 model albumImage {
-  id                BigInt   @id @default(autoincrement())
-  image             String   // @db.VarChar(100)
-  is_shown          Boolean
-  created_at        DateTime @default(now())// @db.Timestamptz(6)
-  album_id          BigInt
-  album Album    @relation(fields: [album_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-//   profile_app_album Album    @relation(fields: [album_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "profile_app_albumima_album_id_9736c867_fk_profile_a")
+  id         BigInt   @id @default(autoincrement())
+  image      String   @db.VarChar(100)
+  is_shown   Boolean
+  created_at DateTime @db.Timestamptz(6)
+  album_id   BigInt
+  album      Album    @relation(fields: [album_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "profile_app_albumima_album_id_9736c867_fk_profile_a")
 
   @@index([album_id], map: "profile_app_albumimage_album_id_9736c867")
   @@map("profile_app_albumimage")

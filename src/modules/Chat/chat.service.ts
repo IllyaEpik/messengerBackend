@@ -1,5 +1,6 @@
 import type{ IChatService, IChatCreateInput, IChatCreate, IChatUpdate } from "./chat.types.ts";
 import { chatRepository } from "./chat.repository.ts";
+import { getLocalTimeString } from "../../utils/getLocalTimeString.ts";
 
 export const chatService: IChatService = {
 	createChat: async (data: IChatCreateInput, userId, avatar) => {
@@ -69,17 +70,17 @@ export const chatService: IChatService = {
 			const chats = (await chatRepository.getByUserId(BigInt(userId))).map((chat) => {
 				const chatName = chat.is_group ? chat.name || "without name" : chat.participants.find((participant) => participant.user.id !== BigInt(userId))?.user.username || "idk"
 				const time = (chat.messages[0]?.created_at || new Date())
-				const currentTime = new Date()
-				const userTime = time.getDate() + time.getMonth()===currentTime.getDate() + time.getMonth()?
-				`${time.getHours()}:${time.getMinutes()}`	:
-				`${time.getDate()}.${time.getMonth()}.${time.getFullYear()}`
+				//const currentTime = new Date()
+				//const userTime = time.getDate() + time.getMonth()===currentTime.getDate() + time.getMonth()?
+				//`${time.getHours()}:${time.getMinutes()}`	:
+				//`${time.getDate()}.${time.getMonth()}.${time.getFullYear()}`
 				return {
 					id: Number(chat.id),
 					chatName,
 					isGroup: chat.is_group,
 					avatar: chat.avatar || "avatar.png",
 					message: chat.messages[0]?.text || "",
-					time: userTime,
+					time: getLocalTimeString(time),
 					// chat.messages[0]?.created_at
 				}
 			})
@@ -134,6 +135,7 @@ export const chatService: IChatService = {
 	},
 	async getChat(userId, chatId) {
 		const chat = await chatRepository.getUserByChatId(BigInt(userId), BigInt(chatId))
+		
 		if (!chat) return "chat is not found|404" 
 		const chatName = chat.is_group ? chat.name : chat.participants.find((participant) => participant.user.id !== BigInt(userId))?.user.username
 		if (!chatName) return "server error|500"
@@ -145,7 +147,7 @@ export const chatService: IChatService = {
 			isAdmin: chat.adminId === BigInt(userId),
 			// time: chat.messages[0]?.created_at || new Date(),
 			// message: chat.messages[0]?.text || ""
-			time: "00:00",
+			time: getLocalTimeString(chat.messages[0]?.created_at),
 			message: "",
 			users: chat.participants.map((participant) => ({
 				id: Number(participant.user.id),

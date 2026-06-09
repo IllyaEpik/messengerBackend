@@ -22,7 +22,10 @@ export interface IMessageCreateInput {
     chatId: number;
     images?: string[];
 }
-
+export interface IMessageCreateImageInput {
+    text: string;
+    images: string[];
+}
 
 export type IMessageRepository = {
     create: (data: IMessageCreate) => Promise<IMessage>;
@@ -47,6 +50,11 @@ export type IMessageController = {
     getByChat: (
         req: Request<{ chatId: string }, any, any>,
         res: Response<IMessage[]>,
+        next: NextFunction
+    ) => void;
+    sendImage: (
+        req: Request<{ chatId: string }, any, IMessageCreateImageInput>,
+        res: Response<IMessage>,
         next: NextFunction
     ) => void;
 };
