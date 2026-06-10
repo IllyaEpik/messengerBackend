@@ -24,7 +24,10 @@ export const MessageSocketController: MessageSocketControllerContract = {
 					return;
 				}
 			}
-			const message = await messageService.create(data, socket.data.userId);
+			const message = await messageService.create(
+				data,
+				socket.data.userId,
+			);
 			console.log(message);
 			if (typeof message === "string") return console.log(message);
 			this.newMessage(socketServer, message);
@@ -39,10 +42,10 @@ export const MessageSocketController: MessageSocketControllerContract = {
 			console.log(
 				serializedMessage.id,
 				"sseesndsnesneds",
-				`chat-${Number(message.chatId)}`,
+				`chat-${message.chatId}`,
 			);
 			socketServer
-				.to(`chat-${Number(message.chatId)}`)
+				.to(`chat-${message.chatId}`)
 				.emit("newMessage", serializedMessage);
 		} catch (error) {
 			console.log(error);

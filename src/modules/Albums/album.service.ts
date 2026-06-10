@@ -35,7 +35,10 @@ export const albumService: serviceContract = {
 		if (image) {
 			const timestamp = Date.now();
 			const originalPath = join(outputDir, `/Avatars/${timestamp}.jpg`);
-			const minimizedPath = join(outputDir, `/crackedAvatars/${timestamp}.jpg`);
+			const minimizedPath = join(
+				outputDir,
+				`/crackedAvatars/${timestamp}.jpg`,
+			);
 
 			await sharp(image.buffer).toFile(originalPath);
 			await sharp(image.buffer)

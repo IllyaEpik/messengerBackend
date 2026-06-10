@@ -1,6 +1,8 @@
 import type { IMessageService, IMessageCreate } from "./message.types.ts";
 import { messageRepository } from "./message.repository.ts";
 import Prisma from "../../config/prismaClient.ts";
+import { chatRepository } from "../Chat/chat.repository.ts";
+import { getLocalTimeString } from "../../utils/getLocalTimeString.ts";
 
 export const messageService: IMessageService = {
 	create: async (data, senderId) => {
@@ -25,9 +27,19 @@ export const messageService: IMessageService = {
 						},
 					}),
 			};
-			console.log(createData);
+
 			const message = await messageRepository.create(createData);
-			return message;
+			const messageOutput = {
+				text: message.text || "",
+				readers: message._count.readers,
+				images: message.messageImage.map((image) => image.image),
+				senderName: message.sender?.username || "no name",
+				senderAvatar: message.sender?.profile?.avatar || "avatar.png",
+				date: getLocalTimeString(message.created_at),
+				chatId: Number(message.chatId),
+				senderId: Number(message.senderId),
+			};
+			return messageOutput;
 		} catch (error) {
 			return `${error}`;
 		}
@@ -45,20 +57,45 @@ export const messageService: IMessageService = {
 			const message = await messageRepository.update(BigInt(messageId), {
 				text,
 			});
-			return message;
+			const messageOutput = {
+				text: message.text || "",
+				readers: message._count.readers,
+				images: message.messageImage.map((image) => image.image),
+				senderName: message.sender?.username || "no name",
+				senderAvatar: message.sender?.profile?.avatar || "avatar.png",
+				date: getLocalTimeString(message.created_at),
+				chatId: Number(message.chatId),
+				senderId: Number(message.senderId),
+			};
+			return messageOutput;
 		} catch (error) {
 			return "not found|404";
 		}
 	},
 
-	getByChat: async (chatId, skip = 0, take = 20) => {
+	getByChat: async (chatId, userId, skip = 0, take = 20) => {
 		try {
+			const isInChat = await chatRepository.isUserInChat(
+				BigInt(chatId),
+				BigInt(userId),
+			);
+			if (!isInChat) return "auth error|401";
 			const messages = await messageRepository.getByChat(
 				BigInt(chatId),
 				skip,
 				take,
 			);
-			return messages;
+			const messagesOutput = messages.map((message) => ({
+				text: message.text || "",
+				readers: message._count.readers,
+				images: message.messageImage.map((image) => image.image),
+				senderName: message.sender?.username || "no name",
+				senderAvatar: message.sender?.profile?.avatar || "avatar.png",
+				date: getLocalTimeString(message.created_at),
+				chatId: Number(message.chatId),
+				senderId: Number(message.senderId),
+			}));
+			return messagesOutput;
 		} catch (error) {
 			return "not found|404";
 		}

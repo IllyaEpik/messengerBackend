@@ -43,9 +43,8 @@ export const chatService: IChatService = {
 	updateChat: async (data, chatId, avatar) => {
 		try {
 			const givenUsers = data.users.map((id) => Number(id)) || [];
-			const existingParticipants = await chatRepository.getAllParticipants(
-				BigInt(chatId),
-			);
+			const existingParticipants =
+				await chatRepository.getAllParticipants(BigInt(chatId));
 			const existingUserIds = existingParticipants.map((p) => p.userId);
 			const newUserIds = givenUsers.filter(
 				(userId) => !existingUserIds.includes(BigInt(userId)),
@@ -70,7 +69,10 @@ export const chatService: IChatService = {
 					})),
 				};
 			}
-			const updated = await chatRepository.update(updateData, BigInt(chatId));
+			const updated = await chatRepository.update(
+				updateData,
+				BigInt(chatId),
+			);
 			return updated;
 		} catch (error) {
 			return `${error}|500`;
@@ -79,29 +81,30 @@ export const chatService: IChatService = {
 
 	getByUserId: async (userId) => {
 		try {
-			const chats = (await chatRepository.getByUserId(BigInt(userId))).map(
-				(chat) => {
-					const chatName = chat.is_group
-						? chat.name || "without name"
-						: chat.participants.find(
-								(participant) => participant.user.id !== BigInt(userId),
-							)?.user.username || "idk";
-					const time = chat.messages[0]?.created_at || new Date();
-					//const currentTime = new Date()
-					//const userTime = time.getDate() + time.getMonth()===currentTime.getDate() + time.getMonth()?
-					//`${time.getHours()}:${time.getMinutes()}`	:
-					//`${time.getDate()}.${time.getMonth()}.${time.getFullYear()}`
-					return {
-						id: Number(chat.id),
-						chatName,
-						isGroup: chat.is_group,
-						avatar: chat.avatar || "avatar.png",
-						message: chat.messages[0]?.text || "",
-						time: getLocalTimeString(time),
-						// chat.messages[0]?.created_at
-					};
-				},
-			);
+			const chats = (
+				await chatRepository.getByUserId(BigInt(userId))
+			).map((chat) => {
+				const chatName = chat.is_group
+					? chat.name || "without name"
+					: chat.participants.find(
+							(participant) =>
+								participant.user.id !== BigInt(userId),
+						)?.user.username || "idk";
+				const time = chat.messages[0]?.created_at || new Date();
+				//const currentTime = new Date()
+				//const userTime = time.getDate() + time.getMonth()===currentTime.getDate() + time.getMonth()?
+				//`${time.getHours()}:${time.getMinutes()}`	:
+				//`${time.getDate()}.${time.getMonth()}.${time.getFullYear()}`
+				return {
+					id: Number(chat.id),
+					chatName,
+					isGroup: chat.is_group,
+					avatar: chat.avatar || "avatar.png",
+					message: chat.messages[0]?.text || "",
+					time: getLocalTimeString(time),
+					// chat.messages[0]?.created_at
+				};
+			});
 
 			return chats;
 		} catch (error) {

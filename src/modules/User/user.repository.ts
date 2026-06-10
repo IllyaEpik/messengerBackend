@@ -209,7 +209,9 @@ export const UserRepository: IRepositoryContract = {
 		});
 		if (!friends) return [];
 		const friendsOnly = friends.map((request) =>
-			request.from_user_id === userId ? request.to_user : request.from_user,
+			request.from_user_id === userId
+				? request.to_user
+				: request.from_user,
 		);
 		const prettyFriends = friendsOnly.map((friend) => {
 			const profile = friend.profile;

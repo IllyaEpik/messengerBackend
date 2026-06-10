@@ -10,7 +10,16 @@ export const messageRepository: IMessageRepository = {
 		const message = await Prisma.message.create({
 			data,
 			include: {
-				sender: true,
+				sender: {
+					select: {
+						username: true,
+						profile: {
+							select: {
+								avatar: true,
+							},
+						},
+					},
+				},
 				readers: true,
 				messageImage: true,
 				chat: true,
@@ -29,7 +38,16 @@ export const messageRepository: IMessageRepository = {
 			where: { id },
 			data,
 			include: {
-				sender: true,
+				sender: {
+					select: {
+						username: true,
+						profile: {
+							select: {
+								avatar: true,
+							},
+						},
+					},
+				},
 				readers: true,
 				messageImage: true,
 				chat: true,
@@ -46,12 +64,24 @@ export const messageRepository: IMessageRepository = {
 	getByChat: async (chatId, skip = 0, take = 20) => {
 		console.log(chatId, skip, take, "getByChat");
 		const messages = await Prisma.message.findMany({
-			where: { chatId },
+			where: {
+				chatId,
+			},
 			orderBy: { created_at: "desc" },
 			skip: 0,
 			take: 40,
 			include: {
-				sender: true,
+				sender: {
+					select: {
+						username: true,
+						profile: {
+							select: {
+								avatar: true,
+							},
+						},
+					},
+				},
+
 				messageImage: true,
 				_count: {
 					select: {
@@ -74,7 +104,16 @@ export const messageRepository: IMessageRepository = {
 				},
 			},
 			include: {
-				sender: true,
+				sender: {
+					select: {
+						username: true,
+						profile: {
+							select: {
+								avatar: true,
+							},
+						},
+					},
+				},
 				readers: true,
 				messageImage: true,
 				chat: true,

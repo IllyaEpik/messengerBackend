@@ -18,7 +18,10 @@ export async function authMiddleware(
 		res.status(401).json({ error: "Invalid authorization format" });
 		return;
 	}
-	const decoded = jwt.verify(token, env.SECRET_KEY) as unknown as TokenPayload;
+	const decoded = jwt.verify(
+		token,
+		env.SECRET_KEY,
+	) as unknown as TokenPayload;
 	const userId = decoded.userId;
 	if (!userId) {
 		res.status(401).json({ error: "Invalid token" });

@@ -6,7 +6,16 @@ export type IMessageCreate = Prisma.MessageCreateInput;
 export type IMessageUpdate = Prisma.MessageUpdateInput;
 export type IMessage = Prisma.MessageGetPayload<{
 	include: {
-		sender: true;
+		sender: {
+			select: {
+				username: true;
+				profile: {
+					select: {
+						avatar: true;
+					};
+				};
+			};
+		};
 		messageImage: true;
 		_count: {
 			select: {
@@ -16,7 +25,16 @@ export type IMessage = Prisma.MessageGetPayload<{
 		readers: true;
 	};
 }>;
-
+export interface IMessageOutput {
+	text: string;
+	readers: number;
+	senderId: number;
+	images: string[];
+	senderName: string;
+	senderAvatar: string;
+	date: string;
+	chatId: number;
+}
 export interface IMessageCreateInput {
 	text: string;
 	chatId: number;
@@ -42,34 +60,38 @@ export type IMessageService = {
 	create: (
 		data: IMessageCreateInput,
 		senderId: number,
-	) => Promise<IMessage | string>;
+	) => Promise<IMessageOutput | string>;
 	update: (
 		messageId: number,
 		text: string,
 		senderId: number,
-	) => Promise<IMessage | string>;
+	) => Promise<IMessageOutput | string>;
 	getByChat: (
 		chatId: number,
+		userId: number,
 		skip?: number,
 		take?: number,
-	) => Promise<IMessage[] | string>;
-	addReader: (messageId: number, userId: number) => Promise<IMessage | string>;
+	) => Promise<IMessageOutput[] | string>;
+	addReader: (
+		messageId: number,
+		userId: number,
+	) => Promise<IMessage | string>;
 };
 
 export type IMessageController = {
 	update: (
 		req: Request<{ messageId: string }, any, { text: string }>,
-		res: Response<IMessage>,
+		res: Response<IMessageOutput>,
 		next: NextFunction,
 	) => void;
 	getByChat: (
 		req: Request<{ chatId: string }, any, any>,
-		res: Response<IMessage[]>,
+		res: Response<IMessageOutput[]>,
 		next: NextFunction,
 	) => void;
 	sendImage: (
 		req: Request<{ chatId: string }, any, IMessageCreateImageInput>,
-		res: Response<IMessage>,
+		res: Response<IMessageOutput>,
 		next: NextFunction,
 	) => void;
 };
@@ -84,5 +106,5 @@ export interface MessageSocketControllerContract {
 		socket: AuthenticatedSocket,
 		data: IMessageCreateInput,
 	) => void;
-	newMessage: (socketServer: ServerSocket, message: IMessage) => void;
+	newMessage: (socketServer: ServerSocket, message: IMessageOutput) => void;
 }

@@ -9,11 +9,9 @@ export function handleResponse(req: Request, res: Response) {
 			const status = Number(stringStatus);
 
 			if (isNaN(status) || status > 599 || status < 100) {
-				res
-					.status(500)
-					.json(
-						`status is wrong (for delevoper), status: ${status}, data ${data}`,
-					);
+				res.status(500).json(
+					`status is wrong (for delevoper), status: ${status}, data ${data}`,
+				);
 				console.log(data);
 				return;
 			}

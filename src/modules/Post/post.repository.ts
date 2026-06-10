@@ -21,7 +21,9 @@ export const PostRepository: IRepositoryContract = {
 					...(data.links && {
 						links: {
 							createMany: {
-								data: data.links.map((link: string) => ({ url: link })),
+								data: data.links.map((link: string) => ({
+									url: link,
+								})),
 							},
 						},
 					}),

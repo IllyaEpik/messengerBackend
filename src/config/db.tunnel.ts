@@ -24,5 +24,10 @@ const forwardOptions = {
 };
 
 export async function startTunnel() {
-	await createTunnel(tunnelOptions, serverOptions, sshOptions, forwardOptions);
+	await createTunnel(
+		tunnelOptions,
+		serverOptions,
+		sshOptions,
+		forwardOptions,
+	);
 }

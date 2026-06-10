@@ -82,7 +82,10 @@ export const UserController: IControllerContract = {
 
 			const userId = Number(res.locals.userId);
 			// console.log(req.body, userId, profileCreateData)
-			const result = await UserService.createProfile(userId, profileCreateData);
+			const result = await UserService.createProfile(
+				userId,
+				profileCreateData,
+			);
 			res.locals.data = result;
 			next();
 		} catch (error) {

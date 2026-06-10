@@ -11,7 +11,10 @@ export const ChatSocketController: ChatSocketControllerContract = {
 				socket.data.userId,
 			);
 			console.log(isSocketParticipant, "qqqqqq");
-			if (isSocketParticipant || typeof isSocketParticipant !== "string") {
+			if (
+				isSocketParticipant ||
+				typeof isSocketParticipant !== "string"
+			) {
 				socket.join(`chat-${data.chatId}`);
 				if (ack) {
 					ack({

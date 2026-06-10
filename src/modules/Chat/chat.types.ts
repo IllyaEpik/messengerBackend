@@ -92,7 +92,10 @@ export type IChatRepository = {
 		userId: bigint,
 		chatId: bigint,
 	) => Promise<IChatContact | null>;
-	deleteChat: (userId: bigint, chatId: bigint) => Promise<IChatContact | null>;
+	deleteChat: (
+		userId: bigint,
+		chatId: bigint,
+	) => Promise<IChatContact | null>;
 	getAllParticipants: (chatId: bigint) => Promise<existParticipants[]>;
 	deleteSelectedParticipants: (
 		userIds: bigint[],

@@ -100,7 +100,10 @@ export const UserService: IServiceContract = {
 		}
 
 		const originalPath = join(outputDir, `/Avatars/${timestamp}.jpg`);
-		const minimizedPath = join(outputDir, `/crackedAvatars/${timestamp}.jpg`);
+		const minimizedPath = join(
+			outputDir,
+			`/crackedAvatars/${timestamp}.jpg`,
+		);
 		if (files?.avatar && files.avatar.length > 0) {
 			const avatar = files.avatar.at(0) as Express.Multer.File;
 			await sharp(avatar.buffer).toFile(originalPath);
@@ -115,7 +118,10 @@ export const UserService: IServiceContract = {
 			//    crackedAvatar:`/crackedAvatars/${timestamp}.jpg`
 			//})
 		}
-		if (!files?.electronicSignature || files.electronicSignature.length < 1) {
+		if (
+			!files?.electronicSignature ||
+			files.electronicSignature.length < 1
+		) {
 			return user;
 		}
 		const electronicSignature = files.electronicSignature.at(
@@ -160,7 +166,10 @@ export const UserService: IServiceContract = {
 		);
 	},
 	getFriends: async (userId, pagination) => {
-		const friends = await UserRepository.getFriends(BigInt(userId), pagination);
+		const friends = await UserRepository.getFriends(
+			BigInt(userId),
+			pagination,
+		);
 		const friendRequests = await UserRepository.getFriendRequests(
 			BigInt(userId),
 		);
@@ -192,7 +201,10 @@ export const UserService: IServiceContract = {
 		if (!user || !user.profile)
 			throw new Error(`wrong user, ${!user} ${!user?.profile}`);
 		return {
-			readers: user.posts.reduce((sum, item) => sum + item._count.views, 0),
+			readers: user.posts.reduce(
+				(sum, item) => sum + item._count.views,
+				0,
+			),
 			frieds: user._count.receivedRequests + user._count.sentRequests,
 			posts: user._count.posts,
 			username: user.username || "noname",

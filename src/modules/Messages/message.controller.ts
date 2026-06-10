@@ -25,9 +25,15 @@ export const messageController: IMessageController = {
 	getByChat: async (req, res, next) => {
 		try {
 			const chatId = Number(req.params.chatId);
+			const userId = Number(res.locals.userId);
 			const skip = Number(req.query.skip ?? 0);
 			const take = Number(req.query.take ?? 20);
-			const result = await messageService.getByChat(chatId, skip, take);
+			const result = await messageService.getByChat(
+				chatId,
+				userId,
+				skip,
+				take,
+			);
 			res.locals.data = result;
 			res.locals.succsesStatus = 200;
 			return next();
@@ -56,7 +62,10 @@ export const messageController: IMessageController = {
 				userId,
 			);
 			if (SocketManager.socketServer && typeof result !== "string") {
-				MessageSocketController.newMessage(SocketManager.socketServer, result);
+				MessageSocketController.newMessage(
+					SocketManager.socketServer,
+					result,
+				);
 			}
 			res.locals.data = result;
 			res.locals.succsesStatus = 201;

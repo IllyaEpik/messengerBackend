@@ -50,7 +50,10 @@ export const postController: IControllerContract = {
 		try {
 			const userId = Number(res.locals.userId);
 			const skip = Number(req.query.skip) || 0;
-			const post = await PostService.get(req.query.userId || userId, skip);
+			const post = await PostService.get(
+				req.query.userId || userId,
+				skip,
+			);
 
 			res.locals.data = post;
 			next();

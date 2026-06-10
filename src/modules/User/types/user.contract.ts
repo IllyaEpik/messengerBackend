@@ -20,7 +20,11 @@ export interface IRepositoryContract {
 	createUser: (user: UserCreate) => Promise<UserSecurityWithId | null>;
 	getUser: (email: string) => Promise<IUser | null>;
 	getUserById: (id: bigint) => Promise<UserSecurityWithId | null>;
-	createCode: (userId: bigint, code: number, expiresAt: Date) => Promise<void>;
+	createCode: (
+		userId: bigint,
+		code: number,
+		expiresAt: Date,
+	) => Promise<void>;
 	getCode: (code: number) => Promise<bigint | null>;
 	deleteCodeByUserId: (userId: bigint) => Promise<void>;
 	//confirmUserById: (userId:number) => Promise<void>
@@ -29,9 +33,15 @@ export interface IRepositoryContract {
 		data: ProfileUpdate,
 		avatar?: updateProfileFile,
 	) => Promise<IProfile | null>;
-	createProfile: (id: bigint, data: ProfileCreate) => Promise<IProfile | null>;
+	createProfile: (
+		id: bigint,
+		data: ProfileCreate,
+	) => Promise<IProfile | null>;
 	sendFriendRequest: (fromUserId: bigint, toUserId: bigint) => Promise<void>;
-	confirmFriendRequest: (fromUserId: bigint, toUserId: bigint) => Promise<void>;
+	confirmFriendRequest: (
+		fromUserId: bigint,
+		toUserId: bigint,
+	) => Promise<void>;
 	getFriends: (userId: bigint, pagination: pagination) => Promise<IProfile[]>;
 	getFriendRequests: (userId: bigint) => Promise<IProfile[]>;
 	getRecommendedFriends: (
@@ -62,7 +72,10 @@ export interface IServiceContract {
 		fromUserId: number,
 		toUserId: number,
 	) => Promise<void | string>;
-	confirmFriendRequest: (fromUserId: number, toUserId: number) => Promise<void>;
+	confirmFriendRequest: (
+		fromUserId: number,
+		toUserId: number,
+	) => Promise<void>;
 	getFriends: (
 		userId: number,
 		pagination: pagination,
