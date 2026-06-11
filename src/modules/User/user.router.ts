@@ -2,6 +2,7 @@ import express from "express";
 import { UserController } from "./user.controller.ts";
 import { authMiddleware } from "../../middlewares/authMiddleware.ts";
 import multer from "multer";
+import { procImagesMiddleware } from "../../middlewares/uploadsMiddleware.ts";
 
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
@@ -13,8 +14,9 @@ router.post("/login", UserController.login);
 router.get("/me", authMiddleware, UserController.me);
 router.patch(
 	"/",
-	upload.fields([{ name: "avatar" }, { name: "electronicSignature" }]),
+	upload.fields([{ name: "avatar" }, { name: "signature" }]),
 	authMiddleware,
+	procImagesMiddleware(100, 90),
 	UserController.updateUser,
 );
 router.post("/profile", authMiddleware, UserController.createProfile);

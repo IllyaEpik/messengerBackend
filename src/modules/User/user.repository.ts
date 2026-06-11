@@ -77,19 +77,16 @@ export const UserRepository: IRepositoryContract = {
 		});
 	},
 	updateUser: async (id, data) => {
-		const { username, ...profileData } = data;
-		if (data.username)
-			Prisma.user.update({
-				where: { id },
-				data: data,
-			}) || null;
-
-		return (
-			Prisma.profile.update({
-				where: { userId: id },
-				data: profileData,
-			}) || null
-		);
+		return await Prisma.user.update({
+			where: { id },
+			data,
+		});
+	},
+	updateProfile: async (id, data) => {
+		return await Prisma.profile.update({
+			where: { userId: id },
+			data,
+		});
 	},
 	createProfile: async (id, data) => {
 		const { username, pseudonym } = data;

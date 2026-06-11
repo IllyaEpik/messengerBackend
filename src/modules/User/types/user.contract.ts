@@ -6,15 +6,17 @@ import type {
 	UserSecurityWithId,
 	IProfile,
 	ProfileCreate,
-	ProfileUpdate,
 	IToken,
 	IError,
-	updateProfileFile,
 	IUser,
 	gottenFriends,
 	friendInfoOutput,
 	userInfo,
 	pagination,
+	ProfileUpdateInput,
+	UserUpdate,
+	ProfileUpdate,
+	updateProfileFile,
 } from "./user.types.ts";
 export interface IRepositoryContract {
 	createUser: (user: UserCreate) => Promise<UserSecurityWithId | null>;
@@ -28,10 +30,10 @@ export interface IRepositoryContract {
 	getCode: (code: number) => Promise<bigint | null>;
 	deleteCodeByUserId: (userId: bigint) => Promise<void>;
 	//confirmUserById: (userId:number) => Promise<void>
-	updateUser: (
-		id: bigint,
+	updateUser: (id: bigint, data: UserUpdate) => Promise<IUser | null>;
+	updateProfile: (
+		userId: bigint,
 		data: ProfileUpdate,
-		avatar?: updateProfileFile,
 	) => Promise<IProfile | null>;
 	createProfile: (
 		id: bigint,
@@ -61,7 +63,7 @@ export interface IServiceContract {
 	secondPhaseOfRegistation: (code: number) => Promise<string | IToken>;
 	updateUser: (
 		id: number,
-		data: ProfileUpdate,
+		data: ProfileUpdateInput,
 		files?: updateProfileFile,
 	) => Promise<IProfile | string>;
 	createProfile: (
@@ -109,7 +111,7 @@ export interface IControllerContract {
 		next: NextFunction,
 	) => Promise<void>;
 	updateUser: (
-		req: Request<{}, IProfile | IError | string, ProfileUpdate>,
+		req: Request<{}, IProfile | IError | string, ProfileUpdateInput>,
 		res: Response<IProfile | IError | string>,
 		next: NextFunction,
 	) => Promise<void>;

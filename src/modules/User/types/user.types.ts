@@ -70,8 +70,34 @@ export type userInfo = Prisma.UserGetPayload<{
 		};
 	};
 }>;
-// export type ProfileCreate = Omit<IProfile, "id" | "userId" | "avatar"> & { username: string }
-export type ProfileUpdate = Partial<ProfileCreate> & { username?: string };
+export type ProfileUpdateInput = {
+	username?: string;
+	pseudonym?: string;
+	firstName?: string;
+	lastName?: string;
+	birthDate?: Date;
+	email?: string;
+	isTextSignature?: string;
+	isImageSignature?: string;
+};
+export type UserUpdate = {
+	username?: string;
+	first_name?: string;
+	last_name?: string;
+	email?: string;
+};
+export type ProfileUpdate = {
+	pseudonym?: string;
+	birth_date?: Date;
+	is_text_signature?: boolean;
+	is_image_signature?: boolean;
+	avatar?: string;
+	signature?: string;
+};
+// export type ProfileUpdate = {
+// 	username?: string;
+// 	presudonym?: string;
+// }
 export type ProfileCreate = {
 	pseudonym: string;
 	username: string;
@@ -83,9 +109,13 @@ export interface gottenFriends {
 	friendsRecommneds: IProfile[];
 }
 
-export type updateProfileFile = {
+export type updateProfileFileInput = {
 	avatar?: Express.Multer.File[];
-	electronicSignature?: Express.Multer.File[];
+	signature?: Express.Multer.File[];
+};
+export type updateProfileFile = {
+	avatar?: string | undefined;
+	signature?: string | undefined;
 };
 export interface pagination {
 	recommends?: number;

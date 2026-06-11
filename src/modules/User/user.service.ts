@@ -89,53 +89,60 @@ export const UserService: IServiceContract = {
 		const timestamp = Date.now();
 
 		const user = await UserRepository.updateUser(BigInt(id), {
-			...data,
-			...(files?.electronicSignature?.[0]
-				? { electronicSignature: `${timestamp}` }
-				: {}),
+			...(data?.username && { username: data?.username }),
+			...(data?.email && { email: data?.email }),
+			...(data?.firstName && { first_name: data?.firstName }),
+			...(data?.lastName && { last_name: data?.lastName }),
 		});
-		if (!user) return "User not found|404";
-		if (!files?.avatar && !files?.electronicSignature) {
-			return user;
+		const profile = await UserRepository.updateProfile(BigInt(id), {
+			...(data?.pseudonym && { pseudonym: data?.pseudonym }),
+			...(data?.birthDate && { birth_date: new Date(data?.birthDate) }),
+			...(data?.isTextSignature && {
+				is_text_signature: data?.isTextSignature === "true",
+			}),
+			...(data?.isImageSignature && {
+				is_image_signature: data?.isImageSignature === "true",
+			}),
+			...(files?.signature && { signature: files.signature }),
+			...(files?.avatar && { avatar: files.avatar }),
+		});
+		if (!user || !profile) return "User not found|404";
+		if (!files?.avatar && !files?.signature) {
+			return profile;
 		}
 
-		const originalPath = join(outputDir, `/Avatars/${timestamp}.jpg`);
-		const minimizedPath = join(
-			outputDir,
-			`/crackedAvatars/${timestamp}.jpg`,
-		);
-		if (files?.avatar && files.avatar.length > 0) {
-			const avatar = files.avatar.at(0) as Express.Multer.File;
-			await sharp(avatar.buffer).toFile(originalPath);
+		// const originalPath = join(outputDir, `/Avatars/${timestamp}.jpg`);
+		// const minimizedPath = join(
+		// 	outputDir,
+		// 	`/crackedAvatars/${timestamp}.jpg`,
+		// );
+		// if (files?.avatar && files.avatar.length > 0) {
+		// 	const avatar = files.avatar.at(0) as Express.Multer.File;
+		// 	await sharp(avatar.buffer).toFile(originalPath);
 
-			await sharp(avatar.buffer)
-				.resize({ width: 100, withoutEnlargement: true })
-				.jpeg({ quality: 80 })
-				.toFile(minimizedPath);
+		// 	await sharp(avatar.buffer)
+		// 		.resize({ width: 100, withoutEnlargement: true })
+		// 		.jpeg({ quality: 80 })
+		// 		.toFile(minimizedPath);
+		// }
+		// if (
+		// 	!files?.signature ||
+		// 	files.signature.length < 1
+		// ) {
+		// 	return user;
+		// }
+		// const electronicSignature = files.signature.at(
+		// 	0,
+		// ) as Express.Multer.File;
+		// await sharp(electronicSignature.buffer).toFile(originalPath);
 
-			//await UserRepository.avatar(id,{
-			//    avatar:`/Avatars/${timestamp}.jpg`,
-			//    crackedAvatar:`/crackedAvatars/${timestamp}.jpg`
-			//})
-		}
-		if (
-			!files?.electronicSignature ||
-			files.electronicSignature.length < 1
-		) {
-			return user;
-		}
-		const electronicSignature = files.electronicSignature.at(
-			0,
-		) as Express.Multer.File;
-		await sharp(electronicSignature.buffer).toFile(originalPath);
+		// await sharp(electronicSignature.buffer)
+		// 	.resize({ width: 100, withoutEnlargement: true })
+		// 	.flatten({ background: { r: 255, g: 255, b: 255 } })
+		// 	.jpeg({ quality: 80 })
+		// 	.toFile(minimizedPath);
 
-		await sharp(electronicSignature.buffer)
-			.resize({ width: 100, withoutEnlargement: true })
-			.flatten({ background: { r: 255, g: 255, b: 255 } })
-			.jpeg({ quality: 80 })
-			.toFile(minimizedPath);
-
-		return user;
+		return profile;
 	},
 	createProfile: async (id, data) => {
 		const user = await UserRepository.createProfile(BigInt(id), data);
@@ -151,6 +158,7 @@ export const UserService: IServiceContract = {
 		);
 		return user;
 	},
+
 	sendFriendRequest: async (fromUserId, toUserId) => {
 		if (fromUserId === toUserId)
 			return "You cannot send a friend request to yourself|400";

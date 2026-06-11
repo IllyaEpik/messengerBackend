@@ -2,7 +2,7 @@ import { env } from "../../config/env.ts";
 import jwt from "jsonwebtoken";
 import { UserService } from "./user.service.ts";
 import type { IControllerContract } from "./types/user.contract.ts";
-import type { updateProfileFile } from "./types/user.types.ts";
+import type { updateProfileFileInput } from "./types/user.types.ts";
 
 export const UserController: IControllerContract = {
 	registation: async (req, res, next) => {
@@ -60,12 +60,15 @@ export const UserController: IControllerContract = {
 			const userUpdateData = req.body;
 			const userId = res.locals.userId;
 			// console.log(userUpdateData)
-			const files = req.files as updateProfileFile;
-
+			const files = req.files as updateProfileFileInput;
+			const fileNames = {
+				signature: files?.signature?.[0]?.filename,
+				avatar: files?.avatar?.[0]?.filename,
+			};
 			const result = await UserService.updateUser(
 				userId,
 				userUpdateData,
-				files,
+				fileNames,
 			);
 			// console.log(result)
 			res.locals.data = result;
