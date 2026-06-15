@@ -13,14 +13,14 @@ model Chat {
 }
 
 model Message {
-  id           BigInt                     @id @default(autoincrement())
+  id           BigInt           @id @default(autoincrement())
   text         String?
-  created_at   DateTime                   @db.Timestamptz(6)
-  chatId       BigInt                     @map("chat_id")
-  senderId     BigInt?                    @map("sender_id")
-  chat         Chat                       @relation(fields: [chatId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "chat_app_message_chat_id_a7824698_fk_chat_app_chat_id")
-  sender       User?                      @relation("sentMessages", fields: [senderId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "chat_app_message_sender_id_03c5fae9_fk_user_app_user_id")
-  readers      chat_app_message_readers[]
+  created_at   DateTime         @db.Timestamptz(6)
+  chatId       BigInt           @map("chat_id")
+  senderId     BigInt?          @map("sender_id")
+  chat         Chat             @relation(fields: [chatId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "chat_app_message_chat_id_a7824698_fk_chat_app_chat_id")
+  sender       User?            @relation("sentMessages", fields: [senderId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "chat_app_message_sender_id_03c5fae9_fk_user_app_user_id")
+  readers      MessageReaders[]
   messageImage ChatImage[]
 
   @@index([chatId], map: "chat_app_message_chat_id_a7824698")
@@ -42,16 +42,17 @@ model ChatParticipants {
 }
 
 /// This model has constraints using non-default deferring rules and requires additional setup for migrations. Visit https://pris.ly/d/constraint-deferring for more info.
-model chat_app_message_readers {
+model MessageReaders {
   id               BigInt  @id @default(autoincrement())
-  message_id       BigInt
-  user_id          BigInt
-  chat_app_message Message @relation(fields: [message_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "chat_app_message_rea_message_id_adafa038_fk_chat_app_")
-  user_app_user    User    @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "chat_app_message_readers_user_id_11fb5647_fk_user_app_user_id")
+  messageId       BigInt @map("message_id")
+  userId          BigInt @map("user_id")
+  message Message @relation(fields: [messageId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "chat_app_message_rea_message_id_adafa038_fk_chat_app_")
+  user    User    @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "chat_app_message_readers_user_id_11fb5647_fk_user_app_user_id")
 
-  @@unique([message_id, user_id], map: "chat_app_message_readers_message_id_user_id_dfa7b323_uniq")
-  @@index([message_id], map: "chat_app_message_readers_message_id_adafa038")
-  @@index([user_id], map: "chat_app_message_readers_user_id_11fb5647")
+  @@unique([messageId, userId], map: "chat_app_message_readers_message_id_user_id_dfa7b323_uniq")
+  @@index([messageId], map: "chat_app_message_readers_message_id_adafa038")
+  @@index([userId], map: "chat_app_message_readers_user_id_11fb5647")
+  @@map("chat_app_message_readers")
 }
 
 /// This model has constraints using non-default deferring rules and requires additional setup for migrations. Visit https://pris.ly/d/constraint-deferring for more info.

@@ -6,6 +6,7 @@ export const PostRepository: IRepositoryContract = {
 		try {
 			return Prisma.post.create({
 				data: {
+					created_at: new Date(),
 					authorId: userId,
 					title: data.title,
 					content: data.content,

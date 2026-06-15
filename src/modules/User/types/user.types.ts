@@ -1,6 +1,5 @@
 import type { Response, Request, NextFunction } from "express";
 import Prisma from "../../../config/prisma.ts";
-import { IPost } from "../../Post/post.types.ts";
 
 export interface UserCreate {
 	email: string;
@@ -16,6 +15,13 @@ export interface UserLogin {
 	email: string;
 	password: string;
 }
+
+export type IEmailVerification = Prisma.EmailVerificationGetPayload<{
+	select: {
+		id:true,
+		userId: true
+	}
+}>
 
 export type IUser = Prisma.UserGetPayload<{}>;
 export type UserSecurity = Omit<IUser, "password">;
@@ -80,12 +86,13 @@ export type ProfileUpdateInput = {
 	isTextSignature?: string;
 	isImageSignature?: string;
 };
-export type UserUpdate = {
-	username?: string;
-	first_name?: string;
-	last_name?: string;
-	email?: string;
-};
+// export type UserUpdate = {
+// 	username?: string;
+// 	first_name?: string;
+// 	last_name?: string;
+// 	email?: string;
+// };
+export type UserUpdate = Prisma.UserUpdateInput
 export type ProfileUpdate = {
 	pseudonym?: string;
 	birth_date?: Date;
@@ -120,4 +127,20 @@ export type updateProfileFile = {
 export interface pagination {
 	recommends?: number;
 	requests?: number;
+}
+export type UserCallback = (response: {
+    onlineUserIds: {
+		status: string,
+		id: number
+	}[]
+} | {
+    status: "error";
+    message?: string;
+}) => void;
+export interface UserPayload {
+    userIds: number[];
+}
+export type UserStatus = {
+	id: number,
+	status: "online" | "offline"
 }

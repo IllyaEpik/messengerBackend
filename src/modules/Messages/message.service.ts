@@ -18,6 +18,7 @@ export const messageService: IMessageService = {
 			);
 			const createData: IMessageCreate = {
 				text: data.text,
+				created_at: new Date(),
 				chat: { connect: { id: data.chatId } },
 				sender: { connect: { id: senderId } },
 				...(data.images &&
@@ -85,6 +86,12 @@ export const messageService: IMessageService = {
 				skip,
 				take,
 			);
+			await messageRepository.addReader(messages
+				.filter(message => 
+				Number(message.senderId) !== userId && 
+				message.readers.some(message => Number(message.userId) !== userId))
+				.map(message => message.id),
+				userId)
 			const messagesOutput = messages.map((message) => ({
 				text: message.text || "",
 				readers: message._count.readers,
@@ -97,19 +104,11 @@ export const messageService: IMessageService = {
 			}));
 			return messagesOutput;
 		} catch (error) {
-			return "not found|404";
+			console.log(error)
+			return "wtf|500";
 		}
 	},
-
-	addReader: async (messageId, userId) => {
-		try {
-			const message = await messageRepository.addReader(
-				BigInt(messageId),
-				BigInt(userId),
-			);
-			return message;
-		} catch (error) {
-			return "not found|404";
-		}
-	},
+	async addReader (messageId, userId) {
+		await messageRepository.addReader([messageId], userId)
+	}
 };

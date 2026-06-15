@@ -13,13 +13,14 @@ model User {
   adminChats                     Chat[]                           @relation("ChatAdmin")
   chatParticipants               ChatParticipants[]               @relation("ChatParticipants")
   sentMessages                   Message[]                        @relation("sentMessages")
-  readers                        chat_app_message_readers[]
+  readers                        MessageReaders[]
   django_admin_log               django_admin_log[]
   posts                          Post[]
   hearts                         PostHeart[]
   likes                          PostLike[]
   views                          PostView[]
   profile                        Profile?                         @relation("UserProfile")
+  user_app_emailverification     EmailVerification[]
   sentRequests                   FriendsRequest[]                 @relation("SentRequests")
   receivedRequests               FriendsRequest[]                 @relation("ReceivedRequests")
   user_app_user_groups           user_app_user_groups[]
@@ -44,3 +45,15 @@ model FriendsRequest {
   @@index([to_user_id], map: "user_app_friendship_to_user_id_f5d68c80")
   @@map("user_app_friendship")
 }
+model EmailVerification {
+  id            BigInt   @id @default(autoincrement())
+  code          String   @db.VarChar(10)
+  newEmail     String   @db.VarChar(254) @map("new_email")
+  expiresAt    DateTime @db.Timestamptz(6) @map("expires_at")
+  userId       BigInt   @map("user_id")
+  user User     @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "user_app_emailverification_user_id_307392a6_fk_user_app_user_id")
+
+  @@index([userId], map: "user_app_emailverification_user_id_307392a6")
+  @@map("user_app_emailverification")
+}
+

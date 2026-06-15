@@ -103,3 +103,5 @@ model user_app_user_user_permissions {
   @@index([permission_id], map: "user_app_user_user_permissions_permission_id_66c16b85")
   @@index([user_id], map: "user_app_user_user_permissions_user_id_6099c7a4")
 }
+
+/// This model has constraints using non-default deferring rules and requires additional setup for migrations. Visit https://pris.ly/d/constraint-deferring for more info.

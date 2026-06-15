@@ -55,12 +55,12 @@ export const UserRepository: IRepositoryContract = {
 		}
 	},
 	getCode: async (code) => {
-		const codeFromDB = await Prisma.emailVerification.findUnique({
-			where: { code: String(code) },
-			select: { userId: true },
+		const codeFromDB = await Prisma.emailVerification.findFirst({
+			where: { code: String(code)},
+			select: { userId: true, id: true },
 		});
 		if (!codeFromDB) return null;
-		return codeFromDB.userId;
+		return codeFromDB;
 	},
 	createCode: async (userId, code, expiresAt) => {
 		await Prisma.emailVerification.create({
@@ -68,12 +68,13 @@ export const UserRepository: IRepositoryContract = {
 				code: String(code),
 				userId,
 				expiresAt,
+				newEmail: ""
 			},
 		});
 	},
-	deleteCodeByUserId: async (userId) => {
+	deleteCode: async (id) => {
 		await Prisma.emailVerification.delete({
-			where: { userId },
+			where: { id },
 		});
 	},
 	updateUser: async (id, data) => {

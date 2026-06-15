@@ -53,7 +53,8 @@ export type IMessageRepository = {
 		skip?: number,
 		take?: number,
 	) => Promise<IMessage[]>;
-	addReader: (messageId: bigint, userId: bigint) => Promise<IMessage>;
+	addReader: (messageIds: bigint[] | number[], userId: bigint | number) => Promise<void>;
+	getUnreadMessages: (chatId: bigint, userId: bigint) => Promise<number>
 };
 
 export type IMessageService = {
@@ -72,10 +73,7 @@ export type IMessageService = {
 		skip?: number,
 		take?: number,
 	) => Promise<IMessageOutput[] | string>;
-	addReader: (
-		messageId: number,
-		userId: number,
-	) => Promise<IMessage | string>;
+	addReader: (messageId: number, userId: number) => void
 };
 
 export type IMessageController = {
@@ -95,7 +93,10 @@ export type IMessageController = {
 		next: NextFunction,
 	) => void;
 };
-
+export interface IMessageRead {
+	messageId: number
+	chatId: number
+}
 export interface MessageSocketControllerContract {
 	registerHandlers: (
 		socketServer: ServerSocket,
@@ -106,5 +107,7 @@ export interface MessageSocketControllerContract {
 		socket: AuthenticatedSocket,
 		data: IMessageCreateInput,
 	) => void;
-	newMessage: (socketServer: ServerSocket, message: IMessageOutput) => void;
+	newMessage: (socketServer: ServerSocket, socket: AuthenticatedSocket, message: IMessageOutput) => void;
+	readMessage: (socket: AuthenticatedSocket, data: IMessageRead, ack: () => void) => void;
+	updateChat: (socketServer: ServerSocket, socket: AuthenticatedSocket, message: IMessageOutput) => void
 }

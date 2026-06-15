@@ -42,9 +42,11 @@ export const ChatSocketController: ChatSocketControllerContract = {
 	},
 	manageChats(socket) {
 		socket.on("chatConnect", (data, ack) => {
+			const IsString = typeof data === "string"
+			console.log(data, typeof data === "string", 12112112)
 			this.joinChat(
 				socket,
-				typeof data === "string" ? JSON.parse(data) : data,
+				IsString ? JSON.parse(data) : data,
 				ack,
 			);
 		});

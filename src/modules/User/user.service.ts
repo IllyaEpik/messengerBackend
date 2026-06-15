@@ -56,7 +56,7 @@ export const UserService: IServiceContract = {
 			return "Invalid confirmation code|404";
 		}
 
-		await UserRepository.deleteCodeByUserId(userId);
+		await UserRepository.deleteCode(userId.id);
 		// await UserRepository.confirmUserById(userId)
 		const token = jwt.sign({ userId }, env.SECRET_KEY, { expiresIn: "7d" });
 
@@ -232,4 +232,7 @@ export const UserService: IServiceContract = {
 		const users = await UserRepository.getAllUsers();
 		return users;
 	},
+    async updateLastSeenAt(id) {
+        return await UserRepository.updateUser(BigInt(id), { last_login: new Date() });
+    },
 };

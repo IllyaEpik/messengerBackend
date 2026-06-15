@@ -1,6 +1,7 @@
 import { authSocketMiddleware } from "../../middlewares/socketAuth.ts";
-import { ChatSocketController } from "../Chat/chat,socket.controller.ts";
+import { ChatSocketController } from "../Chat/chat.socket.controller.ts";
 import { MessageSocketController } from "../Messages/message.socket.controller.ts";
+import { UserSocketController } from "../User/user.socket.controller.ts";
 import type {
 	AuthenticatedSocket,
 	ServerSocket,
@@ -27,6 +28,7 @@ export const SocketManager: SocketManagerContract = {
 			console.log(socket.rooms);
 			ChatSocketController.manageChats(socket);
 			MessageSocketController.registerHandlers(this.socketServer, socket);
+			UserSocketController.registerHandlers(socket, this.socketServer)
 			socket.on("disconnect", () => {
 				console.log("disconnected", socket.id);
 			});

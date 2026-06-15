@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from "express";
+import type{ Request, Response, NextFunction } from "express";
 import type {
 	UserCreate,
 	UserLogin,
@@ -17,7 +17,11 @@ import type {
 	UserUpdate,
 	ProfileUpdate,
 	updateProfileFile,
+	UserCallback,
+	UserPayload,
+	IEmailVerification,
 } from "./user.types.ts";
+import type{ AuthenticatedSocket, ServerSocket } from "../../Socket/socket.types.ts";
 export interface IRepositoryContract {
 	createUser: (user: UserCreate) => Promise<UserSecurityWithId | null>;
 	getUser: (email: string) => Promise<IUser | null>;
@@ -27,8 +31,8 @@ export interface IRepositoryContract {
 		code: number,
 		expiresAt: Date,
 	) => Promise<void>;
-	getCode: (code: number) => Promise<bigint | null>;
-	deleteCodeByUserId: (userId: bigint) => Promise<void>;
+	getCode: (code: number) => Promise<IEmailVerification | null>;
+	deleteCode: (id: bigint | number) => Promise<void>;
 	//confirmUserById: (userId:number) => Promise<void>
 	updateUser: (id: bigint, data: UserUpdate) => Promise<IUser | null>;
 	updateProfile: (
@@ -86,6 +90,7 @@ export interface IServiceContract {
 	removeRecommendations: (userId: number, friendId: number) => Promise<void>;
 	getfriendById: (userId: number) => Promise<friendInfoOutput>;
 	getAllUsers: () => Promise<IUser[]>;
+	updateLastSeenAt: (id:number) => Promise<IUser | null>
 }
 
 export interface IControllerContract {
@@ -168,4 +173,15 @@ export interface IControllerContract {
 		res: Response<IUser, { data: IUser[] }>,
 		next: NextFunction,
 	) => Promise<void>;
+}
+export interface UserSocketControllerContract {
+    subscriptions: Map<number, Set<number>>,
+    registerHandlers: (socket: AuthenticatedSocket, socketServer: ServerSocket) => void;
+    isUserOnline: (userId: number, socketServer: ServerSocket) => boolean;
+    getUsersOnline: (socketServer: ServerSocket, socket: AuthenticatedSocket, data: UserPayload, ack?: UserCallback) => void
+    notifySubscribers: (socket: AuthenticatedSocket, socketServer: ServerSocket, status: "online" | "offline") => void
+}
+
+export interface UserEvents {
+    getUsersOnline: (data: UserPayload, ack?: UserCallback) => void;
 }
