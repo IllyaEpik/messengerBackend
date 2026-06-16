@@ -31,6 +31,7 @@ export const messageService: IMessageService = {
 
 			const message = await messageRepository.create(createData);
 			const messageOutput = {
+				id: Number(message.id),
 				text: message.text || "",
 				readers: message._count.readers,
 				images: message.messageImage.map((image) => image.image),
@@ -59,6 +60,7 @@ export const messageService: IMessageService = {
 				text,
 			});
 			const messageOutput = {
+				id: Number(message.id),
 				text: message.text || "",
 				readers: message._count.readers,
 				images: message.messageImage.map((image) => image.image),
@@ -89,10 +91,11 @@ export const messageService: IMessageService = {
 			await messageRepository.addReader(messages
 				.filter(message => 
 				Number(message.senderId) !== userId && 
-				message.readers.some(message => Number(message.userId) !== userId))
+				!message.readers.some(message => Number(message.userId) === userId))
 				.map(message => message.id),
-				userId)
+				userId) 
 			const messagesOutput = messages.map((message) => ({
+				id: Number(message.id),
 				text: message.text || "",
 				readers: message._count.readers,
 				images: message.messageImage.map((image) => image.image),

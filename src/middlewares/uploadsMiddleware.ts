@@ -16,6 +16,7 @@ export function procImagesMiddleware(width: number, quality: number) {
 			if (!files || files.length === 0) {
 				return next(); // Or handle as an error
 			}
+			console.log(files)
 			await Promise.all(
 				files.map(async (image) => {
 					const fileName = `${Date.now()}.jpg`;

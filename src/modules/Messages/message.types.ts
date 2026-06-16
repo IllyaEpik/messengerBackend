@@ -26,6 +26,7 @@ export type IMessage = Prisma.MessageGetPayload<{
 	};
 }>;
 export interface IMessageOutput {
+	id: number
 	text: string;
 	readers: number;
 	senderId: number;

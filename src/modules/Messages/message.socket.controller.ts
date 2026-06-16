@@ -69,11 +69,13 @@ export const MessageSocketController: MessageSocketControllerContract = {
 		}
 	},
 	async updateChat(socketServer, socket, message) {
-		const chats = await chatRepository.getUserByChatId(socket.data.userId,message.chatId)
-		chats?.participants.forEach(participant => {
-			if (Number(participant.user.id) === socket.data.userId) return
-			socketServer.to(`user-${participant.user.id}`).emit("updateChat",{
-				message
+		const chat = await chatRepository.getUserByChatId(socket.data.userId,message.chatId)
+
+		chat?.participants.forEach(participant => {
+			// if (Number(participant.user.id) === socket.data.userId) return
+			console.log("1111")
+			socketServer.to(`user_${Number(participant.user.id)}`).emit("updateChat",{
+			message
 			})
 		})
 	},
