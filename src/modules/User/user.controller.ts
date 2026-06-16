@@ -35,6 +35,7 @@ export const UserController: IControllerContract = {
 		try {
 			const userData = req.body;
 			const result = await UserService.login(userData);
+			console.log(result)
 			// console.log(userData, result)
 			res.locals.data = result;
 			// console.log(result)

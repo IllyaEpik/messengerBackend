@@ -1,7 +1,7 @@
 model Tag {
   id    BigInt               @id @default(autoincrement())
   name  String               @db.VarChar(100)
-  posts post_app_post_tags[]
+  posts postTags[]
 
   @@map("post_app_tag")
 }
@@ -15,7 +15,7 @@ model Post {
   authorId   BigInt               @map("author_id")
   updated_at DateTime?            @updatedAt @db.Timestamptz(6)
   author     User                 @relation(fields: [authorId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "post_app_post_author_id_4cf2f14d_fk_user_app_user_id")
-  tags       post_app_post_tags[]
+  tags       postTags[]
   hearts     PostHeart[]
   images     PostImage[]
   likes      PostLike[]
@@ -26,16 +26,17 @@ model Post {
   @@map("post_app_post")
 }
 
-model post_app_post_tags {
+model postTags {
   id            BigInt @id @default(autoincrement())
-  post_id       BigInt
-  tag_id        BigInt
-  post_app_post Post   @relation(fields: [post_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "post_app_post_tags_post_id_b72298ea_fk_post_app_post_id")
-  post_app_tag  Tag    @relation(fields: [tag_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "post_app_post_tags_tag_id_df0ee56c_fk_post_app_tag_id")
+  postId       BigInt @map("post_id")
+  tagId        BigInt @map("tag_id")
+  post Post   @relation(fields: [postId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "post_app_post_tags_post_id_b72298ea_fk_post_app_post_id")
+  tag  Tag    @relation(fields: [tagId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "post_app_post_tags_tag_id_df0ee56c_fk_post_app_tag_id")
 
-  @@unique([post_id, tag_id], map: "post_app_post_tags_post_id_tag_id_f9d7c733_uniq")
-  @@index([post_id], map: "post_app_post_tags_post_id_b72298ea")
-  @@index([tag_id], map: "post_app_post_tags_tag_id_df0ee56c")
+  @@unique([postId, tagId], map: "post_app_post_tags_post_id_tag_id_f9d7c733_uniq")
+  @@index([postId], map: "post_app_post_tags_post_id_b72298ea")
+  @@index([tagId], map: "post_app_post_tags_tag_id_df0ee56c")
+  @@map("post_app_post_tags")
 }
 
 model PostImage {

@@ -13,7 +13,7 @@ export const PostRepository: IRepositoryContract = {
 					...(data.tags && {
 						tags: {
 							create: data.tags.map((tagName: string) => ({
-								post_app_tag: {
+								tag: {
 									create: { name: tagName },
 								},
 							})),
@@ -37,7 +37,7 @@ export const PostRepository: IRepositoryContract = {
 								})),
 							},
 						},
-					}),
+					})
 				},
 			});
 		} catch (error) {
@@ -57,7 +57,7 @@ export const PostRepository: IRepositoryContract = {
 					},
 					tags: {
 						select: {
-							post_app_tag: {
+							tag: {
 								select: { name: true },
 							},
 						},
@@ -124,7 +124,7 @@ export const PostRepository: IRepositoryContract = {
 					},
 					tags: {
 						select: {
-							post_app_tag: {
+							tag: {
 								select: { name: true },
 							},
 						},
@@ -234,13 +234,19 @@ export const PostRepository: IRepositoryContract = {
 	},
 	async delete(id, userId) {
 		try {
+			await Prisma.postTags.deleteMany({ where: { postId:id } });
+			await Prisma.postHeart.deleteMany({ where: { postId:id } });
+			await Prisma.postLike.deleteMany({ where: { postId:id } });
+			await Prisma.postView.deleteMany({ where: { postId:id } });
+			await Prisma.postImage.deleteMany({ where: { postId:id } });
+			await Prisma.postLink.deleteMany({ where: { postId:id } });
 			const post = await Prisma.post.delete({
 				where: {
 					authorId: userId,
 					id: id,
 				},
 			});
-			return post;
+			// return post;
 		} catch (error) {
 			throw error;
 		}

@@ -1,7 +1,19 @@
 import type { Response, Request, NextFunction } from "express";
 import Prisma from "../../config/prisma.ts";
 
-export type IPost = Prisma.PostGetPayload<{}>;
+export type IPost = Prisma.PostGetPayload<{
+	// include: {
+	// 	tags: {
+	// 		select: {
+	// 			tag: {
+	// 				select: {
+	// 					name: true
+	// 				}
+	// 			}
+	// 		}
+	// 	}
+	// }
+}>;
 type createPost = {
 	title: string;
 	content: string;
@@ -57,8 +69,8 @@ export interface IControllerContract {
 		next: NextFunction,
 	) => Promise<void>;
 	delete: (
-		req: Request<{ id: string }, IPost, any, any>,
-		res: Response<IPost, { userId: number }>,
+		req: Request<{ id: string }, { status: string }, any, any>,
+		res: Response<{ status: string }, { userId: number }>,
 		next: NextFunction,
 	) => Promise<void>;
 }
@@ -78,7 +90,7 @@ export interface IServiceContract {
 		images: string[],
 	) => Promise<IPost>;
 	action: (id: number, userId: number, action: actionPost) => Promise<IPost>;
-	delete: (id: number, userId: number) => Promise<IPost>;
+	delete: (id: number, userId: number) => Promise<void>;
 }
 
 export interface IRepositoryContract {
@@ -96,5 +108,5 @@ export interface IRepositoryContract {
 		images: string[],
 	) => Promise<IPost>;
 	action: (id: bigint, userId: bigint, action: actionPost) => Promise<IPost>;
-	delete: (id: bigint, userId: bigint) => Promise<IPost>;
+	delete: (id: bigint, userId: bigint) => Promise<void>;
 }

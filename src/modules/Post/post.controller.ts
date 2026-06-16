@@ -66,6 +66,7 @@ export const postController: IControllerContract = {
 		try {
 			const userId = Number(res.locals.userId);
 			const post = await PostService.getByUser(userId);
+			console.log("11111112222222233333", post[0])
 			res.locals.data = post;
 			next();
 			// res.status(200).json(post)
@@ -91,7 +92,7 @@ export const postController: IControllerContract = {
 			const id = Number(req.params.id);
 			const post = await PostService.delete(id, userId);
 
-			res.status(204).json(post);
+			res.status(204).json({status: "ok"});
 		} catch (error) {
 			next(error);
 		}
