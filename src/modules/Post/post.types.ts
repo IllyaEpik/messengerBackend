@@ -13,7 +13,36 @@ export type IPost = Prisma.PostGetPayload<{
 	// 		}
 	// 	}
 	// }
+	include: {
+		images: {
+			select:{
+				compressed_image: true,
+				original_image: true
+			}
+		},
+	likes: {
+			where: {
+				userId: number
+			},
+			select: {
+				id: true
+			}
+		},
+		hearts: {
+			where: {
+				userId: number
+			},
+			select: {
+				id: true
+			}
+		}
+	}
+
 }>;
+export type IPostOutput = {
+	isLiked: boolean
+	isHearted: boolean
+} & IPost
 type createPost = {
 	title: string;
 	content: string;
@@ -29,6 +58,10 @@ interface givenPosts {
 	topic?: string;
 }
 
+export type actionPostInput = {
+	like?: "false" | "true";
+	love?: "false" | "true";
+};
 export type actionPost = {
 	like?: boolean;
 	love?: boolean;
@@ -55,17 +88,17 @@ export interface IControllerContract {
 	) => Promise<void>;
 	get: (
 		req: Request<any, IPost[], any, { skip?: number; userId?: number }>,
-		res: Response<IPost[]>,
+		res: Response<IPost[], {userId: number, data: IPost[]}>,
 		next: NextFunction,
 	) => Promise<void>;
 	update: (
 		req: Request<{ id: string }, IPost[], updatePost, any>,
-		res: Response<IPost, { userId: number }>,
+		res: Response<IPost, { userId: number, data: IPost }>,
 		next: NextFunction,
 	) => Promise<void>;
 	action: (
-		req: Request<{ id: string }, IPost, any, actionPost>,
-		res: Response<IPost, { userId: number }>,
+		req: Request<{ id: string }, IPost, any, actionPostInput>,
+		res: Response<IPost, { userId: number, data: IPost }>,
 		next: NextFunction,
 	) => Promise<void>;
 	delete: (
@@ -81,8 +114,8 @@ export interface IServiceContract {
 		userId: number,
 		images: string[],
 	) => Promise<IPost>;
-	getByUser: (userId: number) => Promise<IPost[]>;
-	get: (userId: number, skip: number) => Promise<IPost[]>;
+	getByUser: (userId: number) => Promise<IPostOutput[]>;
+	get: (userId: number, skip: number) => Promise<IPostOutput[]>;
 	update: (
 		id: number,
 		userId: number,

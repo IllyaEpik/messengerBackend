@@ -46,10 +46,10 @@ export type IChatContact = Prisma.ChatGetPayload<{
 			};
 		};
 		_count: {
-                    select: {
-                        messages: true
-                    }
-                }
+			select: {
+				messages: true;
+			};
+		};
 	};
 }>;
 export interface IChatCreateInput {
@@ -67,10 +67,10 @@ export interface IChatContactOutput {
 	time: Date | string;
 	message: string;
 	users: {
-		username: string,
-		id: number
-	}[]
-	unreadMessages: number
+		username: string;
+		id: number;
+	}[];
+	unreadMessages: number;
 }
 export interface IChatContactDetailed {
 	id: number;
@@ -171,7 +171,7 @@ export type IChatController = {
 		res: Response<IChatContactOutput>,
 		next: NextFunction,
 	) => void;
-	
+
 	// getChatByContact: (userId: bigint, friendId: bigint) => Promise<IChatContactOutput>
 	// isUserInChat: (
 	//     req: Request<any, any, any, {chatId: number, userId: number}>,

@@ -1,4 +1,4 @@
-import type{ Request, Response, NextFunction } from "express";
+import type { Request, Response, NextFunction } from "express";
 import type {
 	UserCreate,
 	UserLogin,
@@ -21,7 +21,10 @@ import type {
 	UserPayload,
 	IEmailVerification,
 } from "./user.types.ts";
-import type{ AuthenticatedSocket, ServerSocket } from "../../Socket/socket.types.ts";
+import type {
+	AuthenticatedSocket,
+	ServerSocket,
+} from "../../Socket/socket.types.ts";
 export interface IRepositoryContract {
 	createUser: (user: UserCreate) => Promise<UserSecurityWithId | null>;
 	getUser: (email: string) => Promise<IUser | null>;
@@ -58,6 +61,7 @@ export interface IRepositoryContract {
 	removeRecommendations: (userId: bigint, friendId: bigint) => Promise<void>;
 	getfriendById: (userId: bigint) => Promise<userInfo | null>;
 	getAllUsers: () => Promise<IUser[]>;
+	deleteUser: (id: number) => void;
 }
 
 export interface IServiceContract {
@@ -90,7 +94,8 @@ export interface IServiceContract {
 	removeRecommendations: (userId: number, friendId: number) => Promise<void>;
 	getfriendById: (userId: number) => Promise<friendInfoOutput>;
 	getAllUsers: () => Promise<IUser[]>;
-	updateLastSeenAt: (id:number) => Promise<IUser | null>
+	updateLastSeenAt: (id: number) => Promise<IUser | null>;
+	deleteUser: (id: number) => void;
 }
 
 export interface IControllerContract {
@@ -173,15 +178,32 @@ export interface IControllerContract {
 		res: Response<IUser, { data: IUser[] }>,
 		next: NextFunction,
 	) => Promise<void>;
+	deleteUser: (
+		req: Request<object, object, {}>,
+		res: Response<void, { userId: number | string; data: string }>,
+		next: NextFunction,
+	) => Promise<void>;
 }
 export interface UserSocketControllerContract {
-    subscriptions: Map<number, Set<number>>,
-    registerHandlers: (socket: AuthenticatedSocket, socketServer: ServerSocket) => void;
-    isUserOnline: (userId: number, socketServer: ServerSocket) => boolean;
-    getUsersOnline: (socketServer: ServerSocket, socket: AuthenticatedSocket, data: UserPayload, ack?: UserCallback) => void
-    notifySubscribers: (socket: AuthenticatedSocket, socketServer: ServerSocket, status: "online" | "offline") => void
+	subscriptions: Map<number, Set<number>>;
+	registerHandlers: (
+		socket: AuthenticatedSocket,
+		socketServer: ServerSocket,
+	) => void;
+	isUserOnline: (userId: number, socketServer: ServerSocket) => boolean;
+	getUsersOnline: (
+		socketServer: ServerSocket,
+		socket: AuthenticatedSocket,
+		data: UserPayload,
+		ack?: UserCallback,
+	) => void;
+	notifySubscribers: (
+		socket: AuthenticatedSocket,
+		socketServer: ServerSocket,
+		status: "online" | "offline",
+	) => void;
 }
 
 export interface UserEvents {
-    getUsersOnline: (data: UserPayload, ack?: UserCallback) => void;
+	getUsersOnline: (data: UserPayload, ack?: UserCallback) => void;
 }

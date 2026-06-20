@@ -9,14 +9,24 @@ export const PostService: IServiceContract = {
 		return post;
 	},
 	async getByUser(userId) {
-		const post = await PostRepository.getByUser(BigInt(userId));
-		// if (!post) throw AppError
-		return post;
+		const posts = await PostRepository.getByUser(BigInt(userId));
+		
+		const convertedPosts = posts.map(post => ({
+			...post,              
+			isLiked: post.likes.length > 0, 
+			isHearted:  post.hearts.length > 0   
+		}));
+		return convertedPosts;
 	},
 	async get(userId, skip) {
 		const posts = await PostRepository.get(BigInt(userId), skip);
 		// if (!posts) throw AppError
-		return posts;
+		const convertedPosts = posts.map(post => ({
+			...post,              
+			isLiked: post.likes.length > 0, 
+			isHearted:  post.hearts.length > 0   
+		}));
+		return convertedPosts
 	},
 	async update(id, userId, data, images) {
 		const post = await PostRepository.update(

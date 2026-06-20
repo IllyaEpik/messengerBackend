@@ -33,21 +33,23 @@ export const albumService: serviceContract = {
 		// }
 
 		if (image) {
-			const timestamp = Date.now();
-			const originalPath = join(outputDir, `/Avatars/${timestamp}.jpg`);
-			const minimizedPath = join(
-				outputDir,
-				`/crackedAvatars/${timestamp}.jpg`,
-			);
+			// const timestamp = Date.now();
+			// const originalPath = join(outputDir, `/Avatars/${timestamp}.jpg`);
+			// const minimizedPath = join(
+			// 	outputDir,
+			// 	`/crackedAvatars/${timestamp}.jpg`,
+			// );
 
-			await sharp(image.buffer).toFile(originalPath);
-			await sharp(image.buffer)
-				.resize({ width: 100, withoutEnlargement: true })
-				.jpeg({ quality: 80 })
-				.toFile(minimizedPath);
+			// await sharp(image.buffer).toFile(originalPath);
+			// await sharp(image.buffer)
+			// 	.resize({ width: 100, withoutEnlargement: true })
+			// 	.jpeg({ quality: 80 })
+			// 	.toFile(minimizedPath);
 			await albumRepository.addPhoto(
 				{
-					image: `${timestamp}.jpg`,
+					image: image,
+					created_at: new Date(),
+					is_shown: true
 				},
 				BigInt(albumId),
 			);

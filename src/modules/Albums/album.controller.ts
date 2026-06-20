@@ -26,7 +26,7 @@ export const albumController: controllerContract = {
 		const data = req.body;
 		const userId = res.locals.userId;
 		const id = Number(req.params.id);
-		const imageFile = req.file;
+		const imageFile = req.file?.filename;
 		if (isNaN(id)) {
 			res.status(400).json("id is wrong");
 		}

@@ -17,6 +17,9 @@ export const UserRepository: IRepositoryContract = {
 					last_name: "",
 					date_joined: new Date(),
 				},
+				include: {
+					profile: true
+				}
 			});
 			console.log(userData, createdUser);
 			return createdUser;
@@ -30,6 +33,9 @@ export const UserRepository: IRepositoryContract = {
 		try {
 			const user = await Prisma.user.findUnique({
 				where: { email },
+				include: {
+					profile: true
+				}
 			});
 			return user;
 		} catch (error) {
@@ -56,7 +62,7 @@ export const UserRepository: IRepositoryContract = {
 	},
 	getCode: async (code) => {
 		const codeFromDB = await Prisma.emailVerification.findFirst({
-			where: { code: String(code)},
+			where: { code: String(code) },
 			select: { userId: true, id: true },
 		});
 		if (!codeFromDB) return null;
@@ -68,7 +74,7 @@ export const UserRepository: IRepositoryContract = {
 				code: String(code),
 				userId,
 				expiresAt,
-				newEmail: ""
+				newEmail: "",
 			},
 		});
 	},
@@ -80,7 +86,10 @@ export const UserRepository: IRepositoryContract = {
 	updateUser: async (id, data) => {
 		return await Prisma.user.update({
 			where: { id },
-			data,
+			data: data,
+			include: {
+				profile: true
+			}
 		});
 	},
 	updateProfile: async (id, data) => {
@@ -388,7 +397,19 @@ export const UserRepository: IRepositoryContract = {
 		return user;
 	},
 	async getAllUsers() {
-		return await Prisma.user.findMany();
+		return await Prisma.user.findMany({
+			include: {
+				profile: true
+			}
+		});
+	},
+	async deleteUser(id) {
+		await Prisma.postView.deleteMany({ where: { userId: id } });
+		return await Prisma.user.delete({
+			where: {
+				id,
+			},
+		});
 	},
 	// async remove
 };

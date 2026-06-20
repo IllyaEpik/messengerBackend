@@ -9,6 +9,8 @@ import { compare, hash } from "bcryptjs";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
 import { albumRepository } from "../Albums/album.repository.ts";
+import { transporter } from "../../config/sender.ts";
+import { randomInt } from "crypto";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -28,26 +30,31 @@ export const UserService: IServiceContract = {
 			if (!gottenUser) {
 				return "Failed to create user|422";
 			}
-			//if (!gottenUser.confirmedUser){
+			// if (!gottenUser.confirmedUser){
 			// return "user with this email already exists|403"
-			//}
+			// }
 			// await UserRepository.deleteCodeByUserId(gottenUser.id)
 			createdUser = gottenUser;
 		}
-		// const confirmationCode = randomInt(999999);
+		const confirmationCode = randomInt(999999);
 
-		// await UserRepository.createCode(createdUser.id, confirmationCode, new Date(Date.now() + 300000))
-		// await transporter.sendMail({
-		//     from: '"messenger" <illyaepik@gmail.com>',
-		//     to: user.email,
-		//     subject: "get confirmation code",
-		//     html: `
-		//         <div style="font-family: Arial, sans-serif; text-align: center;">
-		//             <h1>hello!</h1>
-		//             <p>code is ${confirmationCode}</p>
+		await UserRepository.createCode(
+			createdUser.id,
+			confirmationCode,
+			new Date(Date.now() + 300000),
+		);
+		await transporter.sendMail({
+			from: '"messenger" <illyaepik@gmail.com>',
+			to: user.email,
+			subject: "get confirmation code",
+			html: `
+		        <div style="font-family: Arial, sans-serif; text-align: center;">
+		            <h1>hello!</h1>
+		            <p>code is ${confirmationCode}</p>
 
-		//         </div>
-		//     `})
+		        </div>
+		    `,
+		});
 		return "success|200";
 	},
 	secondPhaseOfRegistation: async (code) => {
@@ -58,7 +65,11 @@ export const UserService: IServiceContract = {
 
 		await UserRepository.deleteCode(userId.id);
 		// await UserRepository.confirmUserById(userId)
-		const token = jwt.sign({ userId }, env.SECRET_KEY, { expiresIn: "7d" });
+		const token = jwt.sign(
+			{ userId: Number(userId.userId) },
+			env.SECRET_KEY,
+			{ expiresIn: "7d" },
+		);
 
 		return { token };
 	},
@@ -110,37 +121,6 @@ export const UserService: IServiceContract = {
 		if (!files?.avatar && !files?.signature) {
 			return profile;
 		}
-
-		// const originalPath = join(outputDir, `/Avatars/${timestamp}.jpg`);
-		// const minimizedPath = join(
-		// 	outputDir,
-		// 	`/crackedAvatars/${timestamp}.jpg`,
-		// );
-		// if (files?.avatar && files.avatar.length > 0) {
-		// 	const avatar = files.avatar.at(0) as Express.Multer.File;
-		// 	await sharp(avatar.buffer).toFile(originalPath);
-
-		// 	await sharp(avatar.buffer)
-		// 		.resize({ width: 100, withoutEnlargement: true })
-		// 		.jpeg({ quality: 80 })
-		// 		.toFile(minimizedPath);
-		// }
-		// if (
-		// 	!files?.signature ||
-		// 	files.signature.length < 1
-		// ) {
-		// 	return user;
-		// }
-		// const electronicSignature = files.signature.at(
-		// 	0,
-		// ) as Express.Multer.File;
-		// await sharp(electronicSignature.buffer).toFile(originalPath);
-
-		// await sharp(electronicSignature.buffer)
-		// 	.resize({ width: 100, withoutEnlargement: true })
-		// 	.flatten({ background: { r: 255, g: 255, b: 255 } })
-		// 	.jpeg({ quality: 80 })
-		// 	.toFile(minimizedPath);
 
 		return profile;
 	},
@@ -232,7 +212,12 @@ export const UserService: IServiceContract = {
 		const users = await UserRepository.getAllUsers();
 		return users;
 	},
-    async updateLastSeenAt(id) {
-        return await UserRepository.updateUser(BigInt(id), { last_login: new Date() });
-    },
+	async updateLastSeenAt(id) {
+		return await UserRepository.updateUser(BigInt(id), {
+			last_login: new Date(),
+		});
+	},
+	async deleteUser(id) {
+		return await UserRepository.deleteUser(id);
+	},
 };

@@ -4,17 +4,15 @@ import { messageRepository } from "./message.repository.ts";
 import { messageService } from "./message.service.ts";
 import type { MessageSocketControllerContract } from "./message.types.ts";
 
-console.log("eqeqeq");
 export const MessageSocketController: MessageSocketControllerContract = {
 	registerHandlers(socketServer, socket) {
 		socket.on("sendMessage", (data) => {
 			console.log("3213132");
 			this.sendMessage(socketServer, socket, data);
-			
 		});
 		socket.on("readMessage", (data, ack) => {
-			this.readMessage(socket,data, ack)
-		})
+			this.readMessage(socketServer, socket, data, ack);
+		});
 	},
 
 	async sendMessage(socketServer, socket, rawData) {
@@ -34,49 +32,47 @@ export const MessageSocketController: MessageSocketControllerContract = {
 				data,
 				socket.data.userId,
 			);
-			console.log(message);
 			if (typeof message === "string") return console.log(message);
-			this.newMessage(socketServer, socket, message);
+			this.newMessage(socketServer, socket.data.userId, message);
 		} catch (error) {
 			console.log(error);
 		}
 	},
 
-	async newMessage(socketServer, socket, message) {
+	async newMessage(socketServer, userId, message) {
 		try {
+			console.log(message);
 			const serializedMessage = convertBigIntToNumber(message);
-			console.log(
-				serializedMessage.id,
-				"sseesndsnesneds",
-				`chat-${message.chatId}`,
-			);
 			socketServer
 				.to(`chat-${message.chatId}`)
 				.emit("newMessage", serializedMessage);
-			this.updateChat(socketServer, socket, serializedMessage)
+			this.updateChat(socketServer, userId, message);
 		} catch (error) {
 			console.log(error);
 		}
 	},
-	async readMessage(socket, data, ack) {
+	async readMessage(socketServer, socket, data, ack) {
 		try {
-			messageRepository.addReader([ data.messageId], socket.data.userId)
-			// socketServer
-			// 	.to(`chat-${message.chatId}`)
-			// 	.emit("newMessage", serializedMessage);
+			messageRepository.addReader([data.messageId], socket.data.userId);
+			socketServer
+				.to(`user_${socket.data.userId}`)
+				.emit("messageRead", {});
 		} catch (error) {
 			console.log(error);
 		}
 	},
-	async updateChat(socketServer, socket, message) {
-		const chat = await chatRepository.getUserByChatId(socket.data.userId,message.chatId)
+	async updateChat(socketServer, userId, message) {
+		const chat = await chatRepository.getUserByChatId(
+			userId,
+			message.chatId,
+		);
 
-		chat?.participants.forEach(participant => {
-			// if (Number(participant.user.id) === socket.data.userId) return
-			console.log("1111")
-			socketServer.to(`user_${Number(participant.user.id)}`).emit("updateChat",{
-			message
-			})
-		})
+		chat?.participants.forEach((participant) => {
+			socketServer
+				.to(`user_${Number(participant.user.id)}`)
+				.emit("updateChat", {
+					message,
+				});
+		});
 	},
 };

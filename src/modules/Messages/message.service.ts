@@ -17,7 +17,7 @@ export const messageService: IMessageService = {
 				"dsaasdasdasdsadsadasdsadsdsadasdasdasdasdasd",
 			);
 			const createData: IMessageCreate = {
-				text: data.text,
+				text: data.text ? data.text : "",
 				created_at: new Date(),
 				chat: { connect: { id: data.chatId } },
 				sender: { connect: { id: senderId } },
@@ -88,12 +88,18 @@ export const messageService: IMessageService = {
 				skip,
 				take,
 			);
-			await messageRepository.addReader(messages
-				.filter(message => 
-				Number(message.senderId) !== userId && 
-				!message.readers.some(message => Number(message.userId) === userId))
-				.map(message => message.id),
-				userId) 
+			await messageRepository.addReader(
+				messages
+					.filter(
+						(message) =>
+							Number(message.senderId) !== userId &&
+							!message.readers.some(
+								(message) => Number(message.userId) === userId,
+							),
+					)
+					.map((message) => message.id),
+				userId,
+			);
 			const messagesOutput = messages.map((message) => ({
 				id: Number(message.id),
 				text: message.text || "",
@@ -107,11 +113,11 @@ export const messageService: IMessageService = {
 			}));
 			return messagesOutput;
 		} catch (error) {
-			console.log(error)
+			console.log(error);
 			return "wtf|500";
 		}
 	},
-	async addReader (messageId, userId) {
-		await messageRepository.addReader([messageId], userId)
-	}
+	async addReader(messageId, userId) {
+		await messageRepository.addReader([messageId], userId);
+	},
 };

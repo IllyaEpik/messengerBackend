@@ -64,6 +64,7 @@ export const messageController: IMessageController = {
 			if (SocketManager.socketServer && typeof result !== "string") {
 				MessageSocketController.newMessage(
 					SocketManager.socketServer,
+					userId,
 					result,
 				);
 			}

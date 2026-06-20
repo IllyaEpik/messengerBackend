@@ -23,7 +23,7 @@ export const UserController: IControllerContract = {
 			const code = Number(req.params.code);
 			const result = await UserService.secondPhaseOfRegistation(code);
 			res.locals.data = result;
-			// console.log(result)
+			console.log(result);
 			res.locals.succsesStatus = 201;
 			next();
 		} catch (error) {
@@ -35,10 +35,8 @@ export const UserController: IControllerContract = {
 		try {
 			const userData = req.body;
 			const result = await UserService.login(userData);
-			console.log(result)
-			// console.log(userData, result)
 			res.locals.data = result;
-			// console.log(result)
+
 			next();
 		} catch (error) {
 			res.status(500).json({ error });
@@ -60,7 +58,6 @@ export const UserController: IControllerContract = {
 		try {
 			const userUpdateData = req.body;
 			const userId = res.locals.userId;
-			// console.log(userUpdateData)
 			const files = req.files as updateProfileFileInput;
 			const fileNames = {
 				signature: files?.signature?.[0]?.filename,
@@ -71,6 +68,9 @@ export const UserController: IControllerContract = {
 				userUpdateData,
 				fileNames,
 			);
+			console.log(userId,
+				userUpdateData,
+				fileNames,result)
 			// console.log(result)
 			res.locals.data = result;
 
@@ -175,6 +175,12 @@ export const UserController: IControllerContract = {
 	async getAllUsers(req, res, next) {
 		const users = await UserService.getAllUsers();
 		res.locals.data = users;
+		next();
+	},
+	async deleteUser(req, res, next) {
+		const userId = Number(res.locals.userId);
+		const user = await UserService.deleteUser(userId);
+		res.locals.data = `${user}|204`;
 		next();
 	},
 };

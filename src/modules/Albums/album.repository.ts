@@ -10,14 +10,16 @@ export const albumRepository: repositoryContract = {
 				},
 				select: {
 					albums: {
+						// skip: 1,
 						select: {
 							name: true,
+							created_at: true,
+							is_default: true,
 							year: true,
 							is_shown: true,
 							id: true,
 							theme: true,
-						},
-						include: {
+
 							albumImage: {
 								select: {
 									image: true,
@@ -53,6 +55,14 @@ export const albumRepository: repositoryContract = {
 				omit: {
 					profileId: true,
 				},
+				include: {
+					albumImage: {
+						select: {
+							image:true,
+							is_shown: true
+						}
+					}
+				}
 			});
 
 			return albums;
@@ -86,6 +96,14 @@ export const albumRepository: repositoryContract = {
 				omit: {
 					profileId: true,
 				},
+				include: {
+					albumImage: {
+						select: {
+							image:true,
+							is_shown: true
+						}
+					}
+				}
 			});
 
 			return albums;
@@ -108,6 +126,7 @@ export const albumRepository: repositoryContract = {
 		});
 	},
 	async deleteAlbum(id) {
+		await Prisma.albumImage.deleteMany({ where: { album_id: id}})
 		return await Prisma.album.delete({
 			where: {
 				id: id,

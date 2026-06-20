@@ -18,17 +18,22 @@ export interface UserLogin {
 
 export type IEmailVerification = Prisma.EmailVerificationGetPayload<{
 	select: {
-		id:true,
-		userId: true
-	}
-}>
+		id: true;
+		userId: true;
+	};
+}>;
 
-export type IUser = Prisma.UserGetPayload<{}>;
+export type IUser = Prisma.UserGetPayload<{include:{profile: true}}>;
 export type UserSecurity = Omit<IUser, "password">;
+
 export type UserSecurityWithId = Omit<UserSecurity, "id"> & { id: bigint };
 export type IProfile = Prisma.ProfileGetPayload<{
 	// include: {
-	//     is_image_signature
+	//     user: {
+	// 		select: {
+	// 			username:true,
+	// 		}
+	// 	}
 	// }
 }>;
 export interface friendInfoOutput {
@@ -92,7 +97,7 @@ export type ProfileUpdateInput = {
 // 	last_name?: string;
 // 	email?: string;
 // };
-export type UserUpdate = Prisma.UserUpdateInput
+export type UserUpdate = Prisma.UserUpdateInput;
 export type ProfileUpdate = {
 	pseudonym?: string;
 	birth_date?: Date;
@@ -128,19 +133,23 @@ export interface pagination {
 	recommends?: number;
 	requests?: number;
 }
-export type UserCallback = (response: {
-    onlineUserIds: {
-		status: string,
-		id: number
-	}[]
-} | {
-    status: "error";
-    message?: string;
-}) => void;
+export type UserCallback = (
+	response:
+		| {
+				onlineUserIds: {
+					status: string;
+					id: number;
+				}[];
+		  }
+		| {
+				status: "error";
+				message?: string;
+		  },
+) => void;
 export interface UserPayload {
-    userIds: number[];
+	userIds: number[];
 }
 export type UserStatus = {
-	id: number,
-	status: "online" | "offline"
-}
+	id: number;
+	status: "online" | "offline";
+};

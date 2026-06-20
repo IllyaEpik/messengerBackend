@@ -37,11 +37,31 @@ export const PostRepository: IRepositoryContract = {
 								})),
 							},
 						},
-					})
+					}),
 				},
+				include: {
+					images: true,
+					likes: {
+						where: {
+							userId
+						},
+						select: {
+							id: true
+						}
+					},
+					hearts: {
+						where: {
+							userId
+						},
+						select: {
+							id: true
+						}
+					}
+				}
 			});
 		} catch (error) {
-			throw error;
+			console.log( error);
+			throw error
 		}
 	},
 	async get(userId, skip) {
@@ -80,6 +100,22 @@ export const PostRepository: IRepositoryContract = {
 							hearts: true,
 						},
 					},
+					likes: {
+						where: {
+							userId
+						},
+						select: {
+							id: true
+						}
+					},
+					hearts: {
+						where: {
+							userId
+						},
+						select: {
+							id: true
+						}
+					}
 				},
 			});
 
@@ -147,6 +183,22 @@ export const PostRepository: IRepositoryContract = {
 							hearts: true,
 						},
 					},
+					likes: {
+						where: {
+							userId
+						},
+						select: {
+							id: true
+						}
+					},
+					hearts: {
+						where: {
+							userId
+						},
+						select: {
+							id: true
+						}
+					}
 				},
 			});
 			return posts;
@@ -188,8 +240,27 @@ export const PostRepository: IRepositoryContract = {
 								})),
 							},
 						},
-					}),
+					})
 				},
+				include: {
+					images: true,
+					likes: {
+						where: {
+							userId
+						},
+						select: {
+							id: true
+						}
+					},
+					hearts: {
+						where: {
+							userId
+						},
+						select: {
+							id: true
+						}
+					}
+				}
 			});
 			return posts;
 		} catch (error) {
@@ -200,7 +271,7 @@ export const PostRepository: IRepositoryContract = {
 		try {
 			const post = await Prisma.post.update({
 				where: {
-					authorId: userId,
+					// authorId: userId,
 					id: id,
 				},
 				data: {
@@ -226,6 +297,25 @@ export const PostRepository: IRepositoryContract = {
 								},
 							},
 				},
+				include: {
+					images: true,
+					likes: {
+						where: {
+							userId
+						},
+						select: {
+							id: true
+						}
+					},
+					hearts: {
+						where: {
+							userId
+						},
+						select: {
+							id: true
+						}
+					}
+				}
 			});
 			return post;
 		} catch (error) {
@@ -234,12 +324,12 @@ export const PostRepository: IRepositoryContract = {
 	},
 	async delete(id, userId) {
 		try {
-			await Prisma.postTags.deleteMany({ where: { postId:id } });
-			await Prisma.postHeart.deleteMany({ where: { postId:id } });
-			await Prisma.postLike.deleteMany({ where: { postId:id } });
-			await Prisma.postView.deleteMany({ where: { postId:id } });
-			await Prisma.postImage.deleteMany({ where: { postId:id } });
-			await Prisma.postLink.deleteMany({ where: { postId:id } });
+			await Prisma.postTags.deleteMany({ where: { postId: id } });
+			await Prisma.postHeart.deleteMany({ where: { postId: id } });
+			await Prisma.postLike.deleteMany({ where: { postId: id } });
+			await Prisma.postView.deleteMany({ where: { postId: id } });
+			await Prisma.postImage.deleteMany({ where: { postId: id } });
+			await Prisma.postLink.deleteMany({ where: { postId: id } });
 			const post = await Prisma.post.delete({
 				where: {
 					authorId: userId,

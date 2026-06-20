@@ -35,9 +35,9 @@ export const chatRepository: IChatRepository = {
 					},
 					_count: {
 						select: {
-							messages: true
-						}
-					}
+							messages: true,
+						},
+					},
 				},
 			});
 			return chat;
@@ -118,11 +118,11 @@ export const chatRepository: IChatRepository = {
 							messages: {
 								where: {
 									senderId: { not: userId },
-									readers: { none: { userId: userId } }
-								}
-							}
-						}
-					}
+									readers: { none: { userId: userId } },
+								},
+							},
+						},
+					},
 				},
 			});
 			return chats;
@@ -189,11 +189,11 @@ export const chatRepository: IChatRepository = {
 							messages: {
 								where: {
 									senderId: { not: userId },
-									readers: { none: { userId: userId } }
-								}
-							}
-						}
-					}
+									readers: { none: { userId: userId } },
+								},
+							},
+						},
+					},
 				},
 			});
 			return chat;
@@ -243,11 +243,11 @@ export const chatRepository: IChatRepository = {
 							messages: {
 								where: {
 									senderId: { not: userId },
-									readers: { none: { userId: userId } }
-								}
-							}
-						}
-					}
+									readers: { none: { userId: userId } },
+								},
+							},
+						},
+					},
 				},
 			});
 			return chat;
@@ -302,11 +302,11 @@ export const chatRepository: IChatRepository = {
 							messages: {
 								where: {
 									senderId: { not: userId },
-									readers: { none: { userId: userId } }
-								}
-							}
-						}
-					}
+									readers: { none: { userId: userId } },
+								},
+							},
+						},
+					},
 				},
 			});
 			console.log(chat);

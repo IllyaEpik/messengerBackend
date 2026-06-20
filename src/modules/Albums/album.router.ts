@@ -2,6 +2,7 @@ import express from "express";
 import { albumController } from "./album.controller.ts";
 import { authMiddleware } from "../../middlewares/authMiddleware.ts";
 import multer from "multer";
+import { procImgMiddleware } from "../../middlewares/uploadMiddleware.ts";
 
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
@@ -12,6 +13,7 @@ router.patch(
 	"/:id",
 	upload.single("image"),
 	authMiddleware,
+	procImgMiddleware(300, 80),
 	albumController.updateAlbum,
 );
 router.post("/", authMiddleware, albumController.createAlbum);

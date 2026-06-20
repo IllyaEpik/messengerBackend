@@ -26,7 +26,7 @@ export type IMessage = Prisma.MessageGetPayload<{
 	};
 }>;
 export interface IMessageOutput {
-	id: number
+	id: number;
 	text: string;
 	readers: number;
 	senderId: number;
@@ -54,8 +54,11 @@ export type IMessageRepository = {
 		skip?: number,
 		take?: number,
 	) => Promise<IMessage[]>;
-	addReader: (messageIds: bigint[] | number[], userId: bigint | number) => Promise<void>;
-	getUnreadMessages: (chatId: bigint, userId: bigint) => Promise<number>
+	addReader: (
+		messageIds: bigint[] | number[],
+		userId: bigint | number,
+	) => Promise<void>;
+	getUnreadMessages: (chatId: bigint, userId: bigint) => Promise<number>;
 };
 
 export type IMessageService = {
@@ -74,7 +77,7 @@ export type IMessageService = {
 		skip?: number,
 		take?: number,
 	) => Promise<IMessageOutput[] | string>;
-	addReader: (messageId: number, userId: number) => void
+	addReader: (messageId: number, userId: number) => void;
 };
 
 export type IMessageController = {
@@ -95,8 +98,8 @@ export type IMessageController = {
 	) => void;
 };
 export interface IMessageRead {
-	messageId: number
-	chatId: number
+	messageId: number;
+	chatId: number;
 }
 export interface MessageSocketControllerContract {
 	registerHandlers: (
@@ -108,7 +111,20 @@ export interface MessageSocketControllerContract {
 		socket: AuthenticatedSocket,
 		data: IMessageCreateInput,
 	) => void;
-	newMessage: (socketServer: ServerSocket, socket: AuthenticatedSocket, message: IMessageOutput) => void;
-	readMessage: (socket: AuthenticatedSocket, data: IMessageRead, ack: () => void) => void;
-	updateChat: (socketServer: ServerSocket, socket: AuthenticatedSocket, message: IMessageOutput) => void
+	newMessage: (
+		socketServer: ServerSocket,
+		userId: number,
+		message: IMessageOutput,
+	) => void;
+	readMessage: (
+		socketServer: ServerSocket,
+		socket: AuthenticatedSocket,
+		data: IMessageRead,
+		ack: () => void,
+	) => void;
+	updateChat: (
+		socketServer: ServerSocket,
+		userId: number,
+		message: IMessageOutput,
+	) => void;
 }

@@ -7,6 +7,8 @@ import { join } from "path";
 import { startTunnel } from "../config/db.tunnel.ts";
 import { createServer } from "http";
 import { SocketManager } from "../modules/Socket/socket.manager.ts";
+import { v2 as cloudinary } from "cloudinary";
+import { env } from "../config/env.ts";
 const app = express();
 const httpServer = createServer(app);
 SocketManager.initSocketServer(httpServer);
@@ -16,6 +18,7 @@ app.use(
 		credentials: true,
 	}),
 );
+
 const outputDir = join(process.cwd(), "src", "media");
 const date = new Date();
 app.use(express.json());
@@ -30,6 +33,11 @@ const PORT = 8000;
 
 async function bootstrap() {
 	try {
+		cloudinary.config({
+			cloud_name: env.CLOUDINARY_CLOUD_NAME,
+			api_key: env.CLOUDINARY_API_KEY,
+			api_secret: env.CLOUDINARY_API_SECRET,
+		});
 		await startTunnel();
 		httpServer.listen(PORT, HOST, () => {
 			console.log(`Web socket server ws://${HOST}:${PORT}`);

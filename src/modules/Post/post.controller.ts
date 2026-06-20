@@ -12,8 +12,8 @@ export const postController: IControllerContract = {
 				...(req.body.tags && { tags: req.body.tags.split(" ") }),
 				...(req.body.links && { links: req.body.links.split(" ") }),
 			};
-
-			const userId = Number(res.locals.userId);
+			console.log(req.body.tags)
+			const userId = Number(res.locals.userId); 
 			const files =
 				req.files && req.files.length
 					? ((req.files as Express.Multer.File[]) || []).map(
@@ -41,7 +41,10 @@ export const postController: IControllerContract = {
 					: [];
 			const post = await PostService.update(id, userId, data, files);
 
-			res.status(200).json(post);
+			// res.status(200).json(post);
+
+			res.locals.data = post;
+			next();
 		} catch (error) {
 			next(error);
 		}
@@ -66,10 +69,8 @@ export const postController: IControllerContract = {
 		try {
 			const userId = Number(res.locals.userId);
 			const post = await PostService.getByUser(userId);
-			console.log("11111112222222233333", post[0])
 			res.locals.data = post;
 			next();
-			// res.status(200).json(post)
 		} catch (error) {
 			next(error);
 		}
@@ -77,11 +78,16 @@ export const postController: IControllerContract = {
 	async action(req, res, next) {
 		try {
 			const userId = Number(res.locals.userId);
-			const data = req.query;
+			const data = {
+				like: req.query.like === "true",
+				heart: req.query.love === "true",
+			};
 			const id = Number(req.params.id);
+			console.log(userId,id, 1222, data)
 			const post = await PostService.action(id, userId, data);
-
-			res.status(200).json(post);
+			res.locals.data = post;
+			next();
+			// res.status(200).json(post);
 		} catch (error) {
 			next(error);
 		}
@@ -92,7 +98,7 @@ export const postController: IControllerContract = {
 			const id = Number(req.params.id);
 			const post = await PostService.delete(id, userId);
 
-			res.status(204).json({status: "ok"});
+			res.status(204).json({ status: "ok" });
 		} catch (error) {
 			next(error);
 		}

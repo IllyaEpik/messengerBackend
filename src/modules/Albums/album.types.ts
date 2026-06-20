@@ -17,6 +17,14 @@ type albumOutput = Prisma.AlbumGetPayload<{
 		profileId: true;
 		topicId: true;
 	};
+	include: {
+		albumImage: {
+			select: {
+				image: true,
+				is_shown: true,
+			}
+		}
+	}
 }>;
 type locals = {
 	userId: number;
@@ -32,8 +40,8 @@ export interface ImageUpload {
 	size: number;
 }
 
-export type photoCreate = Omit<Prisma.AlbumImageCreateInput, "album">;
-export type albumPhoto = Prisma.AlbumImageGetPayload<{}>;
+export type photoCreate = Omit<Prisma.albumImageCreateInput, "album">;
+export type albumPhoto = Prisma.albumImageGetPayload<{}>;
 export interface repositoryContract {
 	createAlbum: (data: albumCreate, userId: bigint) => Promise<albumOutput>;
 	getAlbums: (userId: bigint) => Promise<albumOutput[] | null>;
@@ -50,7 +58,7 @@ export interface serviceContract {
 	updateAlbum: (
 		data: albumUpdate,
 		id: number,
-		image?: ImageUpload,
+		image?: string,
 	) => Promise<albumOutput | string>;
 	deleteAlbum: (id: number, userId: number) => Promise<albumOutput>;
 }

@@ -30,7 +30,8 @@ export const chatService: IChatService = {
 						}
 					: {}),
 			};
-			if (createData.is_group && data.users.length < 3) return "impossible to create group chat with less than 3 users|422";
+			if (createData.is_group && data.users.length < 3)
+				return "impossible to create group chat with less than 3 users|422";
 
 			const created = await chatRepository.create(createData);
 			return created;
@@ -59,8 +60,9 @@ export const chatService: IChatService = {
 				);
 			}
 			const updateData: IChatUpdate = {
-				name: data.name || "no name",
-				avatar: avatar || "avatar.png",
+				// name: data.name,
+				...(avatar ? { avatar: avatar } : {}),
+				...(data.name ? { name: data.name } : {}),
 			};
 			if (newUserIds.length > 0) {
 				updateData.participants = {
@@ -102,15 +104,14 @@ export const chatService: IChatService = {
 					avatar: chat.avatar || "avatar.png",
 					message: chat.messages[0]?.text || "",
 					time: getLocalTimeString(time),
-					users: chat.participants.map(participant => {
-						
+					users: chat.participants.map((participant) => {
 						return {
 							username: participant.user.username || "no name",
-							id: Number(participant.user.id)
-						}
+							id: Number(participant.user.id),
+						};
 					}),
-					unreadMessages: chat._count.messages
-					
+					unreadMessages: chat._count.messages,
+
 					// chat.messages[0]?.created_at
 				};
 			});
@@ -168,14 +169,13 @@ export const chatService: IChatService = {
 				// message: chat.messages[0]?.text || ""
 				message: "",
 				time: "00:00",
-				users: chat.participants.map(participant => {
-						
+				users: chat.participants.map((participant) => {
 					return {
 						username: participant.user.username || "no name",
-						id: Number(participant.user.id)
-					}
+						id: Number(participant.user.id),
+					};
 				}),
-					unreadMessages: chat._count.messages
+				unreadMessages: chat._count.messages,
 			};
 		} catch (error) {
 			return `${error}|21312313`;
@@ -225,14 +225,13 @@ export const chatService: IChatService = {
 			// message: chat.messages[0]?.text || ""
 			time: "00:00",
 			message: "",
-			users: chat.participants.map(participant => {
-						
+			users: chat.participants.map((participant) => {
 				return {
 					username: participant.user.username || "no name",
-					id: Number(participant.user.id)
-				}
+					id: Number(participant.user.id),
+				};
 			}),
-			unreadMessages: chat._count.messages
+			unreadMessages: chat._count.messages,
 		};
 	},
 };

@@ -95,35 +95,32 @@ export const messageRepository: IMessageRepository = {
 	},
 
 	addReader: async (messageIds, userId) => {
-		const messages = await Prisma.messageReaders.createMany({
-			// where: { id: {
-			// 	in: messageIds
-			// } },
-			data: messageIds.map(id => ({
+		try {
+			const messages = await Prisma.messageReaders.createMany({
+				data: messageIds.map((id) => ({
 					messageId: id,
-					userId: userId
-				  }))
-				// rea: {
-				// 	connect: { id: userId },
-				// },
-			
-		});
+					userId: userId,
+				})),
+			});
+		} catch (error) {}
+
 		// return message;
 	},
 	async getUnreadMessages(chatId, userId) {
 		const message = await Prisma.message.count({
 			where: {
 				chatId: chatId,
-				senderId: { not: userId },          // не свои сообщения
-				
-				messageReaders: {                 // связь с MessageReaders
-					none: {                         // нет записи о прочтении этим пользователем
-						userId: userId
-					}
-				}
-			}
-		})
-		return message
-		
+				senderId: { not: userId }, // не свои сообщения
+
+				messageReaders: {
+					// связь с MessageReaders
+					none: {
+						// нет записи о прочтении этим пользователем
+						userId: userId,
+					},
+				},
+			},
+		});
+		return message;
 	},
 };

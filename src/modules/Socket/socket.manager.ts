@@ -28,7 +28,7 @@ export const SocketManager: SocketManagerContract = {
 			console.log(socket.rooms);
 			ChatSocketController.manageChats(socket);
 			MessageSocketController.registerHandlers(this.socketServer, socket);
-			UserSocketController.registerHandlers(socket, this.socketServer)
+			UserSocketController.registerHandlers(socket, this.socketServer);
 			socket.on("disconnect", () => {
 				console.log("disconnected", socket.id);
 			});

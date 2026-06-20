@@ -12,6 +12,7 @@ router.post("/registration", UserController.registation);
 router.get("/registrationsecond/:code", UserController.RegistrationSecondPhase);
 router.post("/login", UserController.login);
 router.get("/me", authMiddleware, UserController.me);
+router.delete("/delete", authMiddleware, UserController.deleteUser);
 router.patch(
 	"/",
 	upload.fields([{ name: "avatar" }, { name: "signature" }]),
