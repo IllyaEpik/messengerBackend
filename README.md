@@ -109,6 +109,7 @@ We chose this project because we think it will be interesting to create. And we 
 
 
 ## Структура проєкту
+```
 backend/
 ├── src/
 │   ├── app/          # точка входу (server.ts, socket.ts)
@@ -122,6 +123,7 @@ backend/
 │   └── migrations/
 ├── .env.example
 ├── package.json
+```
 ## Project Structure
 
 ```
