@@ -1,15 +1,12 @@
-
-7. Висновок по роботі (чим був корисний проєкт, чому навчились, як далі можна розвивати ваш проєкт)  
-8. Контент readme описуємо двома мовами: англійська та українська  
-
 # Проєкт мессенджеру
 
 
 ## Чому саме цей проєкт? 
-## Why this particular project?
+
 
 Ми обрали цей проєкт тому що вважаємо що його буде цікаво створювати. І на ньому ми сможемо використати знання з TypeScript, express та socket.io.
 
+## Why this particular project?
 We chose this project because we think it will be interesting to create. And we will be able to use our knowledge of TypeScript, express and socket.io on it.
 
 
@@ -112,6 +109,21 @@ We chose this project because we think it will be interesting to create. And we 
 
 
 ## Структура проєкту
+backend/
+├── src/
+│   ├── app/          # точка входу (server.ts, socket.ts)
+│   ├── config/       # конфігурації env, cloudinary, prisma
+│   ├── modules/      # бізнес-логіка (auth, users, chat, media)
+│   ├── middleware/   # кастомні middleware
+│   ├── utils/        # спільні утиліти
+│   └── types/        # глобальні типи TypeScript
+├── prisma/
+│   ├── schema.prisma
+│   └── migrations/
+├── .env.example
+├── package.json
+## Project Structure
+
 ```
 backend/
 ├── src/
@@ -126,7 +138,6 @@ backend/
 │   └── migrations/
 ├── .env.example
 ├── package.json
-└── docs/             # detailed documentation
 ```
 
 ---
@@ -161,8 +172,12 @@ CLOUDINARY_API_SECRET=your_cloudinary_api_secret
 ```
 
 ### Step 3: Run Database Migrations
+if you are working local
 ```bash
-npx prisma migrate dev (if local)
+npx prisma migrate dev
+```
+do it anyway
+```bash
 npx prisma generate
 ```
 
@@ -235,8 +250,88 @@ npm run start    # Запуск скомпільованого коду
 ## Project Content & Module Overview
 
 ### Architecture Diagram
-```
-[Insert Architecture Diagram Here - Show Backend Components and Data Flow]
+
+```mermaid
+graph TB
+    subgraph "Client Layer"
+        WEB["🖥️ Web Client"]
+        MOBILE["📱 Mobile Client"]
+    end
+    
+    subgraph "Backend Server"
+        API["📡 Express API<br/>(REST)"]
+        SOCKET["⚡ Socket.io<br/>(Real-time)"]
+        AUTH["🔐 Auth Middleware<br/>(JWT)"]
+        UPLOAD["📤 Upload Middleware<br/>(Multer)"]
+    end
+    
+    subgraph "Business Logic"
+        USER["👤 User Module"]
+        CHAT["💬 Chat Module"]
+        MSG["📨 Message Module"]
+        POST["📝 Post Module"]
+        ALBUM["🖼️ Album Module"]
+    end
+    
+    subgraph "Data Layer"
+        ORM["🗄️ Prisma ORM"]
+        DB["🗄️ PostgreSQL<br/>(Production)"]
+        SQLITE["🗄️ SQLite<br/>(Development)"]
+    end
+    
+    subgraph "External Services"
+        CLOUD["☁️ Cloudinary<br/>(Image Storage)"]
+        SHARP["🖼️ Sharp<br/>(Image Processing)"]
+        EMAIL["📧 Nodemailer<br/>(Email Service)"]
+    end
+    
+    WEB -->|HTTP/WebSocket| API
+    MOBILE -->|HTTP/WebSocket| API
+    
+    API --> AUTH
+    API --> SOCKET
+    API --> UPLOAD
+    
+    AUTH --> USER
+    API --> CHAT
+    API --> MSG
+    API --> POST
+    UPLOAD --> ALBUM
+    
+    USER --> ORM
+    CHAT --> ORM
+    MSG --> ORM
+    POST --> ORM
+    ALBUM --> ORM
+    
+    ORM --> DB
+    ORM --> SQLITE
+    
+    ALBUM --> SHARP
+    SHARP --> CLOUD
+    
+    USER --> EMAIL
+    
+    SOCKET -->|Real-time events| MSG
+    SOCKET -->|Live updates| CHAT
+    
+    style WEB fill:#61DAFB,color:#ffffff
+    style MOBILE fill:#61DAFB,color:#ffffff
+    style API fill:#000000,color:#ffffff
+    style SOCKET fill:#010101,color:#ffffff
+    style AUTH fill:#FF6B6B,color:#ffffff
+    style UPLOAD fill:#FF6B6B,color:#ffffff
+    style USER fill:#3B82F6,color:#ffffff
+    style CHAT fill:#3B82F6,color:#ffffff
+    style MSG fill:#3B82F6,color:#ffffff
+    style POST fill:#3B82F6,color:#ffffff
+    style ALBUM fill:#3B82F6,color:#ffffff
+    style ORM fill:#2D3748,color:#ffffff
+    style DB fill:#336791,color:#ffffff
+    style SQLITE fill:#4A7BA7,color:#ffffff
+    style CLOUD fill:#3448C5,color:#ffffff
+    style SHARP fill:#99CC00,color:#ffffff
+    style EMAIL fill:#0F9D58,color:#ffffff
 ```
 
 ### Core Modules
@@ -331,8 +426,88 @@ npm run start    # Запуск скомпільованого коду
 ## Зміст проєкту та Огляд Модулів
 
 ### Діаграма Архітектури
-```
-[Вставте діаграму архітектури - Показуйте компоненти бекенду та потоки даних]
+
+```mermaid
+graph TB
+    subgraph "Рівень Клієнта"
+        WEB["🖥️ Веб Клієнт"]
+        MOBILE["📱 Мобільний Клієнт"]
+    end
+    
+    subgraph "Бекенд Сервер"
+        API["📡 Express API<br/>(REST)"]
+        SOCKET["⚡ Socket.io<br/>(Реальний час)"]
+        AUTH["🔐 Auth Middleware<br/>(JWT)"]
+        UPLOAD["📤 Upload Middleware<br/>(Multer)"]
+    end
+    
+    subgraph "Бізнес Логіка"
+        USER["👤 Модуль Користувачів"]
+        CHAT["💬 Модуль Чатів"]
+        MSG["📨 Модуль Повідомлень"]
+        POST["📝 Модуль Постів"]
+        ALBUM["🖼️ Модуль Альбомів"]
+    end
+    
+    subgraph "Рівень Даних"
+        ORM["🗄️ Prisma ORM"]
+        DB["🗄️ PostgreSQL<br/>(Production)"]
+        SQLITE["🗄️ SQLite<br/>(Розробка)"]
+    end
+    
+    subgraph "Зовнішні Сервіси"
+        CLOUD["☁️ Cloudinary<br/>(Сховище Зображень)"]
+        SHARP["🖼️ Sharp<br/>(Обробка Зображень)"]
+        EMAIL["📧 Nodemailer<br/>(Сервіс Email)"]
+    end
+    
+    WEB -->|HTTP/WebSocket| API
+    MOBILE -->|HTTP/WebSocket| API
+    
+    API --> AUTH
+    API --> SOCKET
+    API --> UPLOAD
+    
+    AUTH --> USER
+    API --> CHAT
+    API --> MSG
+    API --> POST
+    UPLOAD --> ALBUM
+    
+    USER --> ORM
+    CHAT --> ORM
+    MSG --> ORM
+    POST --> ORM
+    ALBUM --> ORM
+    
+    ORM --> DB
+    ORM --> SQLITE
+    
+    ALBUM --> SHARP
+    SHARP --> CLOUD
+    
+    USER --> EMAIL
+    
+    SOCKET -->|События реального часу| MSG
+    SOCKET -->|Прямі оновлення| CHAT
+    
+    style WEB fill:#61DAFB,color:#ffffff
+    style MOBILE fill:#61DAFB,color:#ffffff
+    style API fill:#000000,color:#ffffff
+    style SOCKET fill:#010101,color:#ffffff
+    style AUTH fill:#FF6B6B,color:#ffffff
+    style UPLOAD fill:#FF6B6B,color:#ffffff
+    style USER fill:#3B82F6,color:#ffffff
+    style CHAT fill:#3B82F6,color:#ffffff
+    style MSG fill:#3B82F6,color:#ffffff
+    style POST fill:#3B82F6,color:#ffffff
+    style ALBUM fill:#3B82F6,color:#ffffff
+    style ORM fill:#2D3748,color:#ffffff
+    style DB fill:#336791,color:#ffffff
+    style SQLITE fill:#4A7BA7,color:#ffffff
+    style CLOUD fill:#3448C5,color:#ffffff
+    style SHARP fill:#99CC00,color:#ffffff
+    style EMAIL fill:#0F9D58,color:#ffffff
 ```
 
 ### Основні Модулі
